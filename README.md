@@ -1,2 +1,2 @@
 # Tetris-x86-64-Assembly
-Tetris implemented x86-64 assembly using the raylib library
+Tetris implemented x86-64 assembly using the raylib library for the CSE1400 Computer Organisation course at TU Delft
