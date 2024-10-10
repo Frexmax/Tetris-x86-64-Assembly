@@ -35,10 +35,9 @@ xyToCell:
     - y = floor(#cell / xSize)
     - x = #cell % xSize
 @param - #cell - rdi - cell number to convert
-@return - indexX (ah), indexY (al)
+@return - indexX (al), indexY (ah)
 */
 cellToXY:                               
-
     # save registers used in subroutine
     pushq %rbx
     pushq %rdx

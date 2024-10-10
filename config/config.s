@@ -16,9 +16,9 @@
     mulq cellSize                       # multiply xSize (rax) by cellSize
     movq %rax, screenWidth              # copy xSize * cellSize (rax) to screenWidth
 
-    movq ySize, %rax                    # do the same but for ySize and screenHeight ...
-    mulq cellSize
-    movq %rax, screenHeight
+    movq ySize, %rax                    # copy ySize to rax   
+    mulq cellSize                       # multiply ySize (rax) by cellSize
+    movq %rax, screenHeight             # copy ySize * cellSize (rax) to screenWidth
 
     popq %rax                           # retrieve rax
 .endm

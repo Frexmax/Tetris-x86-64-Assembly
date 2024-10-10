@@ -6,11 +6,21 @@
 .data
 
 .text
+    out: .asciz "x: %d, y: %d\n"
+
 	.globl	main
 	.type	main, @function
 
 main:
     prologue                            # set up stack frame
+
+    movq $out, %rdi
+    movzbq %al, %rsi
+    movb %ah, %al
+    movzbq %al, %rdx
+    movq $0, %rax
+    call printf
+
 
     initializeScreenSize                # initialize screen width and height based on cell size and grid size
     movq screenWidth, %rdi              # arg 1 - int - screen width
