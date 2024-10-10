@@ -1,6 +1,7 @@
 .include "utils/utils.s"
 .include "colors/colors.s"
 .include "config/config.s"
+.include "grid/grid.s"
 
 .data
 
@@ -10,7 +11,7 @@
 
 main:
     prologue                            # set up stack frame
-    
+
     initializeScreenSize                # initialize screen width and height based on cell size and grid size
     movq screenWidth, %rdi              # arg 1 - int - screen width
     movq screenHeight, %rsi             # arg 2 - int - screen height

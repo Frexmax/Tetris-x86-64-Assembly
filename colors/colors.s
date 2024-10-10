@@ -14,4 +14,4 @@
 .data
     BLACK: .long 0xff000000 
     WHITE: .long 0xffffffff
-    BACKGROUND: .long 
+    BACKGROUND: .long 0xffffffff

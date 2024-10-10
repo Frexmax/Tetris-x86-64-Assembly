@@ -1,25 +1,24 @@
 .data
-
-    windowTitle: .asciz "Tetris"
-
-    ySize: .quad 20
-    xSize: .quad 10
-    cellSize: .quad 50
+    windowTitle: .asciz "Tetris"        # title of the raylib window 
+                                        
+    ySize: .quad 20                     # number of cells in the x direction
+    xSize: .quad 10                     # number of cells in the y direction
+    cellSize: .quad 50                  # the length of the cell side - each cell is a square
     
-    targetFPS: .quad 60
-    screenWidth: .quad 0
-    screenHeight: .quad 0
+    targetFPS: .quad 60                 # target FPS for raylib
+    screenWidth: .quad 0                # the pixel width of the raylib window - xSize * cellSize (initialized in main)
+    screenHeight: .quad 0               # the pixel height of the raylib window - ySize * cellSize (initialized in main)
 
 .macro initializeScreenSize
-    pushq %rax              
+    pushq %rax                          # save rax
 
-    movq xSize, %rax
-    mulq cellSize
-    movq %rax, screenWidth
+    movq xSize, %rax                    # copy xSize to rax                   
+    mulq cellSize                       # multiply xSize (rax) by cellSize
+    movq %rax, screenWidth              # copy xSize * cellSize (rax) to screenWidth
 
-    movq ySize, %rax
+    movq ySize, %rax                    # do the same but for ySize and screenHeight ...
     mulq cellSize
     movq %rax, screenHeight
 
-    popq %rax
+    popq %rax                           # retrieve rax
 .endm
