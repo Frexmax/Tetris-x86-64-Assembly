@@ -1,2 +1,2 @@
-# Documentation for the utils.s functionality
+# Documentation for the colors.s functionality
 
