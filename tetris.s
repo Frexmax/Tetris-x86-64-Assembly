@@ -45,7 +45,7 @@ mainGameLoop:
 
     jmp mainGameLoop                    # next iteration of the game
 
-quitGame:                               #yay that's the end
+quitGame:                               
     call CloseWindow                    # close window
     epilogue	                        # close stack frame
     movq $0, %rdi                       # error code 0, all successful
