@@ -28,8 +28,17 @@
 Write to buffer based on indexX and indexY
 @param - indexX - rdi - x index of our container (not referring to raylib window positions)
 @param - indexY - rsi - y index of our container (not referring to raylib window positions)
+@param - value - rdx - the value to write in the cell
 */
 writeToBufferFromXY:
+    pushq %rcx
+    pushq %rax
+    call xyToCell
+    movq $buffer, %rcx
+    movq %rdx, (%rax, %rcx, 1)
+
+    popq %rax
+    popq %rcx
     ret
 
 /*
