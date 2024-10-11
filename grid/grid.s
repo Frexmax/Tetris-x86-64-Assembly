@@ -33,9 +33,11 @@ Write to buffer based on indexX and indexY
 writeToBufferFromXY:
     pushq %rcx
     pushq %rax
-    call xyToCell
+    
+    call xyToCell  #cellno in %rax
     movq $buffer, %rcx
-    movq %rdx, (%rax, %rcx, 1)
+    addq %rax, %rcx
+    movb %dl, (%rcx)
 
     popq %rax
     popq %rcx
@@ -53,38 +55,6 @@ drawGrid:
     pushq %r9
     pushq %r10
     pushq %r11
-
-    movq $buffer, %r9
-    movb $0, (%r9)
-    movb $1, 1(%r9)
-    movb $0, 2(%r9)
-    movb $1, 3(%r9)
-    movb $0, 4(%r9)
-    movb $1, 5(%r9)
-    movb $0, 6(%r9)
-    movb $1, 7(%r9)
-    movb $0, 8(%r9)
-    movb $1, 9(%r9)
-    movb $1, 10(%r9)
-    movb $0, 11(%r9)
-    movb $1, 12(%r9)
-    movb $0, 13(%r9)
-    movb $1, 14(%r9)
-    movb $0, 15(%r9)
-    movb $1, 16(%r9)
-    movb $0, 17(%r9)
-    movb $1, 18(%r9)
-    movb $0, 19(%r9)
-    movb $0, 20(%r9)
-    movb $1, 21(%r9)
-    movb $0, 22(%r9)
-    movb $1, 23(%r9)
-    movb $0, 24(%r9)
-    movb $1, 25(%r9)
-    movb $0, 26(%r9)
-    movb $1, 27(%r9)
-    movb $0, 28(%r9)
-    movb $1, 29(%r9)
 
     movq $0, %r9
     loopCellNumber:
