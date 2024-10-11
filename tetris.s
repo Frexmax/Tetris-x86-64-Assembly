@@ -33,12 +33,9 @@ mainGameLoop:
     call BeginDrawing                   # Setup raylib canvas to start drawing
         movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
+        
+        call drawGrid
 
-        # TEST DRAW BLOCK
-        movq $0, %rdi                   # arg 1 - indexX in our coordinate system where the block should be drawn
-        movq $0, %rsi                   # arg 2 - indexY in our coordinate system where the block should be drawn
-        movq BLACK, %rdx                # arg 3 - 32-bits RGBA - color of the block
-        call drawBlock                  
     call EndDrawing                     # End canvas drawing
     
     jmp mainGameLoop                    # next iteration of the game

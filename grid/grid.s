@@ -35,6 +35,18 @@ drawGrid:
     pushq %r10
     pushq %r11
 
+    movq $buffer, %r9
+    movb $1, (%r9)
+    movb $1, 1(%r9)
+    movb $1, 2(%r9)
+    movb $1, 3(%r9)
+    movb $1, 4(%r9)
+    movb $1, 5(%r9)
+    movb $1, 6(%r9)
+    movb $1, 7(%r9)
+    movb $1, 8(%r9)
+    movb $1, 9(%r9)
+
     movq $0, %r9
     loopCellNumber:
         cmpq cellNumber, %r9
@@ -44,15 +56,15 @@ drawGrid:
         call cellToXY                   # get indexX (al) and indexY (ah) based on the #cell
 
         movq $buffer, %r11
-        movzbq (%r11, %r9, 1), %r10    # get value of grid at #cell %r9 from the buffer
+        movzbq (%r11, %r9, 1), %r10     # get value of grid at #cell %r9 from the buffer
         cmpq $0, %r10                   # if the value in the buffer == 0, then no block present
-        jne drawColour
+        je nextLoopIteration
 
         draw:
             # TEST DRAW BLOCK
             movzbq %al, %rdi            # arg 1 - indexX in our coordinate system where the block should be drawn
             movb %ah, %al
-            movq %al, %rsi              # arg 2 - indexY in our coordinate system where the block should be drawn
+            movzbq %al, %rsi            # arg 2 - indexY in our coordinate system where the block should be drawn
             movq BLACK, %rdx            # arg 3 - 32-bits RGBA - color of the block
             call drawBlock   
             jmp nextLoopIteration               
@@ -61,20 +73,6 @@ drawGrid:
             incq %r9
             jmp loopCellNumber
 
-    /*
-    movq $0, %r10
-    loopX:
-        cmpq %r9, xSize
-        jge exitDrawGrid 
-    
-        loopY:
-            cmpq %r10, ySize
-            jge nextXIteration
-        
-            nextXIteration:
-                incq %r9
-                jmp loopX
-    */
     
     exitDrawGrid:
         # retrieve register used in subroutine
