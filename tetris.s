@@ -13,15 +13,7 @@
 
 main:
     prologue                            # set up stack frame
-
-    movq $out, %rdi
-    movzbq %al, %rsi
-    movb %ah, %al
-    movzbq %al, %rdx
-    movq $0, %rax
-    call printf
-
-
+    
     initializeScreenSize                # initialize screen width and height based on cell size and grid size
     movq screenWidth, %rdi              # arg 1 - int - screen width
     movq screenHeight, %rsi             # arg 2 - int - screen height
@@ -30,7 +22,7 @@ main:
 
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
-
+    
     jmp mainGameLoop                    # go to main game loop 
 
 mainGameLoop:
@@ -41,11 +33,17 @@ mainGameLoop:
     call BeginDrawing                   # Setup raylib canvas to start drawing
         movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
-    call EndDrawing                     # End canvas drawing
 
+        # TEST DRAW BLOCK
+        movq $0, %rdi                   # arg 1 - indexX in our coordinate system where the block should be drawn
+        movq $0, %rsi                   # arg 2 - indexY in our coordinate system where the block should be drawn
+        movq BLACK, %rdx                # arg 3 - 32-bits RGBA - color of the block
+        call drawBlock                  
+    call EndDrawing                     # End canvas drawing
+    
     jmp mainGameLoop                    # next iteration of the game
 
-quitGame:                               
+quitGame:
     call CloseWindow                    # close window
     epilogue	                        # close stack frame
     movq $0, %rdi                       # error code 0, all successful

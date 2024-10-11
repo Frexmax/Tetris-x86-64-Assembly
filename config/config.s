@@ -3,6 +3,7 @@
                                         
     ySize: .quad 20                     # number of cells in the x direction
     xSize: .quad 10                     # number of cells in the y direction
+    cellNumber: .quad 200               # number of cells = ySize * xSize
     cellSize: .quad 50                  # the length of the cell side - each cell is a square
     
     targetFPS: .quad 60                 # target FPS for raylib
