@@ -8,6 +8,33 @@
 	popq %rbp											
 .endm
 
+.macro saveRegisters
+    pushq %rax
+    pushq %rcx
+    pushq %rdx
+    pushq %rsi
+    pushq %rdi
+    pushq %r8
+    pushq %r9
+    pushq %r10
+    pushq %r11
+    pushq %r12
+    pushq %r13
+    pushq %r14
+    pushq %r15
+.endm
+
+.macro retrieveAllRegisters
+    popq %r15
+    popq %r14
+    popq %r13
+    popq %r12
+    popq %r11
+    popq %r10
+    popq %r9
+    popq %r8
+
+.endm
 
 /*
 indexX and indexY from our coordinate system are converted to the #cell in our buffer according to the formula:

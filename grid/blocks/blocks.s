@@ -31,7 +31,10 @@ drawBlock:
     movq %rdx, %r8                      # arg-4 of raylib DrawRectangle - 32-bit RGBA - color of the block     
     movq cellSize, %rdx                 # arg 2 of raylib DrawRectangle - int - width of block
     movq cellSize, %rcx                 # arg 3 of raylib DrawRectangle - int - height of block
+    
+    saveRegisters
     call DrawRectangle                  # call raylib function to draw block in the window 
+    retrieveAllRegisters
     
     # retrieve register used in subroutine
     popq %r8

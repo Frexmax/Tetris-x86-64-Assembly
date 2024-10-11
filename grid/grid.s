@@ -22,6 +22,16 @@
 	.globl	checkGrid
     .type	checkGrid, @function
 
+
+
+/*
+Write to buffer based on indexX and indexY
+@param - indexX - rdi - x index of our container (not referring to raylib window positions)
+@param - indexY - rsi - y index of our container (not referring to raylib window positions)
+*/
+writeToBufferFromXY:
+    ret
+
 /*
 Draw the xSize x ySize grid in the raylib window, 
 by looping through the x and y coordinates and checking value in buffer
@@ -36,7 +46,7 @@ drawGrid:
     pushq %r11
 
     movq $buffer, %r9
-    movb $1, (%r9)
+    movb $0, (%r9)
     movb $1, 1(%r9)
     movb $1, 2(%r9)
     movb $1, 3(%r9)
