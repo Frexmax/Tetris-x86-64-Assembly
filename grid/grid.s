@@ -27,24 +27,33 @@ Draw the xSize x ySize grid in the raylib window,
 by looping through the x and y coordinates and checking value in buffer
 */
 drawGrid:
+    # save registers used in subroutine
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %r9
+    pushq %r10
+    pushq %r11
+
     movq $0, %r9
     loopCellNumber:
         cmpq cellNumber, %r9
         jge exitDrawGrid
                                         
-        movq %rdi                       # arg 1 - int - #cell 
+        movq %r9, %rdi                  # arg 1 - int - #cell 
         call cellToXY                   # get indexX (al) and indexY (ah) based on the #cell
 
-        movq ($buffer, %r9, 1), %r10    # get value of grid at #cell %r9 from the buffer
-        cmpq $0, %r10                    # if the value in the buffer == 0, then no block present
+        movq $buffer, %r11
+        movzbq (%r11, %r9, 1), %r10    # get value of grid at #cell %r9 from the buffer
+        cmpq $0, %r10                   # if the value in the buffer == 0, then no block present
         jne drawColour
 
         draw:
             # TEST DRAW BLOCK
-            movzbq %al, %rdi                   # arg 1 - indexX in our coordinate system where the block should be drawn
+            movzbq %al, %rdi            # arg 1 - indexX in our coordinate system where the block should be drawn
             movb %ah, %al
-            movq %al, %rsi                   # arg 2 - indexY in our coordinate system where the block should be drawn
-            movq BLACK, %rdx                # arg 3 - 32-bits RGBA - color of the block
+            movq %al, %rsi              # arg 2 - indexY in our coordinate system where the block should be drawn
+            movq BLACK, %rdx            # arg 3 - 32-bits RGBA - color of the block
             call drawBlock   
             jmp nextLoopIteration               
 
@@ -68,6 +77,13 @@ drawGrid:
     */
     
     exitDrawGrid:
+        # retrieve register used in subroutine
+        popq %r11
+        popq %r10
+        popq %r9
+        popq %rdx
+        popq %rsi
+        popq %rdi
         ret
 
 /*
