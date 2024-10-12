@@ -66,10 +66,10 @@ mainGameLoop:
         movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
         
-        #movq $1, %rdi
-        #movq $0, %rsi
-        #movq $0, %rdx
-        #call writeToBufferFromXY
+        # movq $1, %rdi
+        # movq $0, %rsi
+        # movq $0, %rdx
+        # call writeToBufferFromXY
 
         call drawGrid
 
