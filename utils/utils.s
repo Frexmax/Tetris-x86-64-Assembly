@@ -1,7 +1,3 @@
-.data
-    TRUE: .quad 1
-    FALSE: .quad 0
-
 .macro prologue
     pushq %rbp 											
 	movq %rsp, %rbp
@@ -37,11 +33,7 @@
     popq %r10
     popq %r9
     popq %r8
-    popq %rdi
-    popq %rsi
-    popq %rdx
-    popq %rcx
-    popq %rax
+
 .endm
 
 /*
