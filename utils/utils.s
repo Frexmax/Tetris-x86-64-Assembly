@@ -1,3 +1,9 @@
+.data
+    TRUE: .quad 1
+    FALSE: .quad 0
+
+.text
+
 .macro prologue
     pushq %rbp 											
 	movq %rsp, %rbp

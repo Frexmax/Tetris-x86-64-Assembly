@@ -56,9 +56,32 @@ drawGrid:
     pushq %r10
     pushq %r11
 
-    movq $0, %r9
+    # TEST checkForBlock
+    movq $1, %rdi                       
+    movq $0, %rsi
+    call checkForBlock                  # return value of #cell 1 -> 23
+
+    movq $1, %rdi                       
+    movq $1, %rsi
+    call checkForBlock                  # return value of #cell 11 -> 0
+
+    movq $0, %rdi
+    movq $1, %rsi
+    call checkForBlock                  # return value of #cell 10 -> 1
+
+    # TEST checkLine
+    movq $0, %rdi       
+    call checkLine                      # returns FALSE (0)
+
+    movq $3, %rdi
+    call checkLine                      # returns TRUE (1)
+
+    movq $2, %rdi
+    call checkLine                      # return FALSE (0)
+
+    movq $0, %r9                        # initialize loop at #cell = 0
     loopCellNumber:
-        cmpq cellNumber, %r9
+        cmpq cellNumber, %r9            # if #cell >= cellNumber, exit loop
         jge exitDrawGrid
                                         
         movq %r9, %rdi                  # arg 1 - int - #cell 
@@ -79,10 +102,9 @@ drawGrid:
             jmp nextLoopIteration               
 
         nextLoopIteration:
-            incq %r9
-            jmp loopCellNumber
+            incq %r9                    # go to next #cell by incrementing by 1
+            jmp loopCellNumber          # start next loop iteration
 
-    
     exitDrawGrid:
         # retrieve register used in subroutine
         popq %r11
@@ -94,17 +116,65 @@ drawGrid:
         ret
 
 /*
-TO DO
+Call XYToCell and check buffer at #cell
+@param - indexX - rdi - x index of our container (not referring to raylib window positions)
+@param - indexY - rsi - y index of our container (not referring to raylib window positions)
+@return - value of buffer at indexX, indexY (rax)
 */
 checkForBlock:
+    pushq %rdi
+    pushq %rsi
+
+    call xyToCell                       # get #cell corresponding to indexX, indexY (store in rax)
+    movq %rax, %rdi                     # copy rax to rdi, to later store the value of buffer in rax
+    movq $buffer, %rsi                  # store buffer address in rsi to allow for indirect addressing
+    movzbq (%rsi, %rdi, 1), %rax        # get value of buffer at #cell
+
+    popq %rsi
+    popq %rdi
     ret
 
 /*
-TO DO
+Subroutine checking if the whole line is filled with blocks, returns TRUE (1) if it is, otherwise FALSE (0)
+@param - indexY - rdi - the index of the (horizontal) line, i.e. at which height is it positioned
+@return - boolean value TRUE (1) or FALSE (0) in (rax)
 */
 checkLine:
-    ret
+    pushq %rdi
+    pushq %rsi
+    pushq %r10
+    pushq %r11
+                                        
+    movq %rdi, %r11                     # store indexY in r11, as rdi will be used to pass arguments to checkForBlock
+    movq $0, %r10                       # loop counter going from 0 to xSize - 1 (inclusive) 
+    loopX:
+        cmpq xSize, %r10
+        jge lineFull
 
+        movq %r10, %rdi                 # arg 1 of checkForBlock - indexX, which is equal to the current iteration of the loop
+        movq %r11, %rsi                 # arg 2 of checkForBlock - indexY, which is the y of the line being checked
+        call checkForBlock              # get the value at indexX, indexY in the buffer
+
+        cmpq $0, %rax                   # if the value in the buffer is equal to 0, then a spot is empty and the line is not filled
+        je lineNotFull                  # exit the loop
+        
+        incq %r10
+        jmp loopX                       # start the next iteration of the loop
+
+    lineFull:
+        movq TRUE, %rax                 # return value TRUE (1), line is filled
+        jmp exitCheckLine
+
+    lineNotFull:
+        movq FALSE, %rax                # return value FALSE (0), line is not filled
+        jmp exitCheckLine
+
+    exitCheckLine:
+        popq %r11
+        popq %r10
+        popq %rsi
+        popq %rdi
+        ret
 /*
 TO DO
 */

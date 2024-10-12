@@ -23,9 +23,9 @@ main:
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
     
-     movq $buffer, %r9
+    movq $buffer, %r9
     movb $0, (%r9)
-    movb $1, 1(%r9)
+    movb $23, 1(%r9)
     movb $0, 2(%r9)
     movb $1, 3(%r9)
     movb $0, 4(%r9)
@@ -34,6 +34,7 @@ main:
     movb $1, 7(%r9)
     movb $0, 8(%r9)
     movb $1, 9(%r9)
+
     movb $1, 10(%r9)
     movb $0, 11(%r9)
     movb $1, 12(%r9)
@@ -44,6 +45,7 @@ main:
     movb $0, 17(%r9)
     movb $1, 18(%r9)
     movb $0, 19(%r9)
+
     movb $0, 20(%r9)
     movb $1, 21(%r9)
     movb $0, 22(%r9)
@@ -54,6 +56,17 @@ main:
     movb $1, 27(%r9)
     movb $0, 28(%r9)
     movb $1, 29(%r9)
+
+    movb $1, 30(%r9)
+    movb $1, 31(%r9)
+    movb $1, 32(%r9)
+    movb $1, 33(%r9)
+    movb $1, 34(%r9)
+    movb $1, 35(%r9)
+    movb $1, 36(%r9)
+    movb $1, 37(%r9)
+    movb $1, 38(%r9)
+    movb $1, 39(%r9)
 
     jmp mainGameLoop                    # go to main game loop 
 
@@ -66,9 +79,9 @@ mainGameLoop:
         movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
         
-        #movq $1, %rdi
-        #movq $0, %rsi
-        #movq $0, %rdx
+        # movq $1, %rdi
+        # movq $0, %rsi
+        # movq $0, %rdx
         #call writeToBufferFromXY
 
         call drawGrid
