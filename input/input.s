@@ -9,31 +9,44 @@ Get the keyboard command - left, right arrows
 */
 getCurrentCommand:
     pushq %rdi
-                                        
+
+    call GetKeyPressed                       # get the current key pressed
+
+    cmpq KEY_RIGHT, %rax
+    je rightArrowReturn
+
+    cmpq KEY_LEFT, %rax
+    je leftArrowReturn
+
+    /*
     movq $257, %rdi                # check if the right arrow is pressed 
     call IsKeyDown                                
 
     cmpq FALSE, %rax                    # if function returns TRUE (not 0), return the value of KEY_RIGHT, else continue and check left arrow key
-    # jne rightArrowReturn                
+    jne rightArrowReturn                
 
     movq KEY_LEFT, %rdi                 # check if the left arrow is pressed
     call IsKeyDown                       
     cmpq FALSE, %rax                    # if function returns TRUE (not 0), return the value of KEY_LEFT 
     jne leftArrowReturn
+    */
 
     jmp noKeyOrNotValid                 # if neither KEY_RIGHT or KEY_LEFT key pressed, then return 0 in rax
 
     rightArrowReturn:
-        movq KEY_RIGHT, %rax            # copy KEY_RIGHT value to rax, to be returned
+        # movq KEY_RIGHT, %rax            # copy KEY_RIGHT value to rax, to be returned
+        movq RIGHT, %rax
         jmp exitGetCurrentCommand
 
     leftArrowReturn:
-        movq KEY_LEFT, %rax             # copy KEY_LEFT value to rax, to be returned
+        # movq KEY_LEFT, %rax             # copy KEY_LEFT value to rax, to be returned
+        movq LEFT, %rax
         jmp exitGetCurrentCommand       
 
     noKeyOrNotValid:
         movq $0, %rax                   # copy 0 to rax, to be returned
         jmp exitGetCurrentCommand
+  
 
     exitGetCurrentCommand:
         popq %rdi
