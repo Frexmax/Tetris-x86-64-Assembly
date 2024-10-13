@@ -56,39 +56,39 @@ drawGrid:
     pushq %r10
     pushq %r11
 
-    # TEST getBlockValue
-    movq $1, %rdi                       
-    movq $0, %rsi
-    call getBlockValue                  # return value of #cell 1 -> 23
-
-    movq $1, %rdi                       
-    movq $1, %rsi
-    call getBlockValue                  # return value of #cell 11 -> 0
-
-    movq $0, %rdi
-    movq $1, %rsi
-    call getBlockValue                  # return value of #cell 10 -> 1
-
-    # TEST checkLine
-    movq $0, %rdi       
-    call checkLine                      # returns FALSE (0)
-
-    movq $3, %rdi
-    call checkLine                      # returns TRUE (1)
-
-    movq $2, %rdi
-    call checkLine                      # return FALSE (0)
-
-    # TEST checkLine
-    movq $2, %rdi
-    call copyLineAbove
-
-    movq $3, %rdi
-    call copyLineAbove
-
-    movq $0, %rdi
-    call copyLineAbove
-
+#    # TEST getBlockValue
+#    movq $1, %rdi                       
+#    movq $0, %rsi
+#    call getBlockValue                  # return value of #cell 1 -> 23
+#
+#    movq $1, %rdi                       
+#    movq $1, %rsi
+#    call getBlockValue                  # return value of #cell 11 -> 0
+#
+#    movq $0, %rdi
+#    movq $1, %rsi
+#    call getBlockValue                  # return value of #cell 10 -> 1
+#
+#    # TEST checkLine
+#    movq $0, %rdi       
+#    call checkLine                      # returns FALSE (0)
+#
+#    movq $3, %rdi
+#    call checkLine                      # returns TRUE (1)
+#
+#    movq $2, %rdi
+#    call checkLine                      # return FALSE (0)
+#
+#    # TEST checkLine
+#    movq $2, %rdi
+#    call copyLineAbove
+#
+#    movq $3, %rdi
+#    call copyLineAbove
+#
+#    movq $19, %rdi
+#    call copyLineAbove
+#
     movq $0, %r9                        # initialize loop at #cell = 0
     loopCellNumber:
         cmpq cellNumber, %r9            # if #cell >= cellNumber, exit loop
@@ -247,15 +247,58 @@ copyLineAbove:
         popq %rsi
         popq %rdi        
         ret
-
-/* 
-TO DO
+/*
+Shift the grid downwards above to this line
+@param - indexY - rdi - the index of the (horizontal) line, i.e. at which height is it positioned (where start shifting)
 */
 gridShift:
-    ret
+    pushq %rdi                        # save y index
+    loopShift:
+        cmpq ySize, %rdi              # if y >= ySize, exit loop
+        jge exitGridShift
 
-/* 
-TO DO
+        call copyLineAbove            # copy line from above into current line
+
+        incq %rdi                     # move to the next line
+        jmp loopShift                 # repeat the loop
+
+    exitGridShift:
+        popq %rdi                     # restore y index
+        ret
+
+/*
+Check if the grid has at least a full line, if it does then return 1 in rax, else return 0
+@return - boolean value TRUE (1) or FALSE (0) in (rax)
 */
+
 checkGrid:
-    ret
+    # save registers used in subroutine
+    pushq %rdi
+    pushq %r10
+
+    movq $0, %r10                      # initialize loop counter, starting from y = 0
+    loopCheckGrid:
+        cmpq ySize, %r10               # if y >= ySize, exit loop
+        jge gridHasNoFullLine
+
+        movq %r10, %rdi                # arg 1 of checkLine - indexY, which is equal to the current iteration of the loop
+        call checkLine                 # check if the current line is full
+        
+        cmpq $1, %rax                  # if checkLine returned TRUE (1), meaning the line is full
+        je gridHasFullLine             # exit with 0 in %rax
+
+        incq %r10                      # go to the next line
+        jmp loopCheckGrid              # repeat the loop
+
+    gridHasNoFullLine:
+        movq $1, %rax                  # return 1, meaning no full lines found
+        jmp exitCheckGrid
+
+    gridHasFullLine:
+        movq $0, %rax                  # return 0, meaning at least one full line was found
+
+    exitCheckGrid:
+        # retrieve registers used in subroutine
+        popq %r10
+        popq %rdi
+        ret

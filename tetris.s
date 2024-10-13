@@ -23,10 +23,8 @@ main:
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
     
-    jmp mainGameLoop                    # go to main game loop 
 
-mainGameLoop:
-    movq $buffer, %r9
+movq $buffer, %r9
     movb $0, (%r9)
     movb $23, 1(%r9)
     movb $0, 2(%r9)
@@ -70,7 +68,28 @@ mainGameLoop:
     movb $1, 37(%r9)
     movb $1, 38(%r9)
     movb $1, 39(%r9)
-    
+
+
+    movb $1, 190(%r9)
+    movb $1, 191(%r9)
+    movb $1, 192(%r9)
+    movb $1, 193(%r9)
+    movb $1, 194(%r9)
+    movb $1, 195(%r9)
+    movb $1, 196(%r9)
+    movb $1, 197(%r9)
+    movb $1, 198(%r9)
+    movb $1, 199(%r9)
+
+    #movq $0, %rdi
+    #call gridShift
+
+
+
+    jmp mainGameLoop                    # go to main game loop 
+
+mainGameLoop:
+   
     call WindowShouldClose              # check if the window should be closed: when escape key pressed or window close icon clicked
     cmpq $0, %rax                       # if WindowShouldClose returns true (anything else than 0) then exit program
 	jne quitGame                        # quit game
@@ -83,7 +102,7 @@ mainGameLoop:
         # movq $0, %rsi
         # movq $0, %rdx
         #call writeToBufferFromXY
-
+ 
         call drawGrid
 
     call EndDrawing                     # End canvas drawing
