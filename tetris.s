@@ -69,21 +69,29 @@ movq $buffer, %r9
     movb $1, 38(%r9)
     movb $1, 39(%r9)
 
+    movb $0, 180(%r9)
+    movb $0, 181(%r9)
+    movb $0, 182(%r9)
+    movb $1, 183(%r9)
+    movb $1, 184(%r9)
+    movb $1, 185(%r9)
+    movb $0, 186(%r9)
+    movb $0, 187(%r9)
+    movb $0, 188(%r9)
+    movb $0, 189(%r9)
 
-    movb $1, 190(%r9)
-    movb $1, 191(%r9)
-    movb $1, 192(%r9)
-    movb $1, 193(%r9)
+    movb $0, 190(%r9)
+    movb $0, 191(%r9)
+    movb $0, 192(%r9)
+    movb $0, 193(%r9)
     movb $1, 194(%r9)
-    movb $1, 195(%r9)
-    movb $1, 196(%r9)
-    movb $1, 197(%r9)
-    movb $1, 198(%r9)
-    movb $1, 199(%r9)
+    movb $0, 195(%r9)
+    movb $0, 196(%r9)
+    movb $0, 197(%r9)
+    movb $0, 198(%r9)
+    movb $0, 199(%r9)
 
-    #movq $0, %rdi
-    #call gridShift
-
+  
 
 
     jmp mainGameLoop                    # go to main game loop 
