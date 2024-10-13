@@ -1,4 +1,7 @@
+.include "input/input_config.s"
+
 .text
+    outCommand: .asciz "%d"
 
 /* 
 Get the keyboard command - left, right arrows
@@ -7,10 +10,11 @@ Get the keyboard command - left, right arrows
 getCurrentCommand:
     pushq %rdi
                                         
-    movq KEY_RIGHT, %rdi                # check if the right arrow is pressed 
+    movq $257, %rdi                # check if the right arrow is pressed 
     call IsKeyDown                                
+
     cmpq FALSE, %rax                    # if function returns TRUE (not 0), return the value of KEY_RIGHT, else continue and check left arrow key
-    jne rightArrowReturn                
+    # jne rightArrowReturn                
 
     movq KEY_LEFT, %rdi                 # check if the left arrow is pressed
     call IsKeyDown                       

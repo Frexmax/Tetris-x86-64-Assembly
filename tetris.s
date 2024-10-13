@@ -1,3 +1,4 @@
+.include "input/input.s"
 .include "utils/utils.s"
 .include "colors/colors.s"
 .include "config/config.s"
@@ -91,16 +92,15 @@ movq $buffer, %r9
     movb $0, 198(%r9)
     movb $0, 199(%r9)
 
-  
-
 
     jmp mainGameLoop                    # go to main game loop 
 
 mainGameLoop:
-   
     call WindowShouldClose              # check if the window should be closed: when escape key pressed or window close icon clicked
     cmpq $0, %rax                       # if WindowShouldClose returns true (anything else than 0) then exit program
 	jne quitGame                        # quit game
+
+    call getCurrentCommand
 
     call BeginDrawing                   # Setup raylib canvas to start drawing
         movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color
@@ -109,14 +109,15 @@ mainGameLoop:
         # movq $1, %rdi
         # movq $0, %rsi
         # movq $0, %rdx
-        #call writeToBufferFromXY
+        # call writeToBufferFromXY
+
         movq $0, %rdi
         call gridShift
 
         call drawGrid
 
     call EndDrawing                     # End canvas drawing
-    
+
     jmp mainGameLoop                    # next iteration of the game
 
 quitGame:
