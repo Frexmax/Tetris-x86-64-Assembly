@@ -6,7 +6,7 @@
     cellNumber: .quad 200               # number of cells = ySize * xSize
     cellSize: .quad 50                  # the length of the cell side - each cell is a square
     
-    targetFPS: .quad 60                 # target FPS for raylib
+    targetFPS: .quad 1                 # target FPS for raylib
     screenWidth: .quad 0                # the pixel width of the raylib window - xSize * cellSize (initialized in main)
     screenHeight: .quad 0               # the pixel height of the raylib window - ySize * cellSize (initialized in main)
 

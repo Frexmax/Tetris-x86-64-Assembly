@@ -102,7 +102,9 @@ mainGameLoop:
         # movq $0, %rsi
         # movq $0, %rdx
         #call writeToBufferFromXY
- 
+        movq $0, %rdi
+        call gridShift
+
         call drawGrid
 
     call EndDrawing                     # End canvas drawing
