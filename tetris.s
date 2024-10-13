@@ -23,6 +23,9 @@ main:
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
     
+    jmp mainGameLoop                    # go to main game loop 
+
+mainGameLoop:
     movq $buffer, %r9
     movb $0, (%r9)
     movb $23, 1(%r9)
@@ -67,11 +70,8 @@ main:
     movb $1, 37(%r9)
     movb $1, 38(%r9)
     movb $1, 39(%r9)
-
-    jmp mainGameLoop                    # go to main game loop 
-
-mainGameLoop:
-	call WindowShouldClose              # check if the window should be closed: when escape key pressed or window close icon clicked
+    
+    call WindowShouldClose              # check if the window should be closed: when escape key pressed or window close icon clicked
     cmpq $0, %rax                       # if WindowShouldClose returns true (anything else than 0) then exit program
 	jne quitGame                        # quit game
 

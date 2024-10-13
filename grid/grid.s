@@ -7,8 +7,8 @@
 	.globl	drawGrid
     .type	drawGrid, @function
 
-	.globl	checkForBlock
-    .type	checkForBlock, @function
+	.globl	getBlockValue
+    .type	getBlockValue, @function
 
 	.globl	checkLine
     .type	checkLine, @function
@@ -56,18 +56,18 @@ drawGrid:
     pushq %r10
     pushq %r11
 
-    # TEST checkForBlock
+    # TEST getBlockValue
     movq $1, %rdi                       
     movq $0, %rsi
-    call checkForBlock                  # return value of #cell 1 -> 23
+    call getBlockValue                  # return value of #cell 1 -> 23
 
     movq $1, %rdi                       
     movq $1, %rsi
-    call checkForBlock                  # return value of #cell 11 -> 0
+    call getBlockValue                  # return value of #cell 11 -> 0
 
     movq $0, %rdi
     movq $1, %rsi
-    call checkForBlock                  # return value of #cell 10 -> 1
+    call getBlockValue                  # return value of #cell 10 -> 1
 
     # TEST checkLine
     movq $0, %rdi       
@@ -78,6 +78,16 @@ drawGrid:
 
     movq $2, %rdi
     call checkLine                      # return FALSE (0)
+
+    # TEST checkLine
+    movq $2, %rdi
+    call copyLineAbove
+
+    movq $3, %rdi
+    call copyLineAbove
+
+    movq $0, %rdi
+    call copyLineAbove
 
     movq $0, %r9                        # initialize loop at #cell = 0
     loopCellNumber:
@@ -121,7 +131,8 @@ Call XYToCell and check buffer at #cell
 @param - indexY - rsi - y index of our container (not referring to raylib window positions)
 @return - value of buffer at indexX, indexY (rax)
 */
-checkForBlock:
+getBlockValue:
+    # save registers used in subroutine
     pushq %rdi
     pushq %rsi
 
@@ -130,6 +141,7 @@ checkForBlock:
     movq $buffer, %rsi                  # store buffer address in rsi to allow for indirect addressing
     movzbq (%rsi, %rdi, 1), %rax        # get value of buffer at #cell
 
+    # retrieve registers used in subroutine
     popq %rsi
     popq %rdi
     ret
@@ -140,20 +152,21 @@ Subroutine checking if the whole line is filled with blocks, returns TRUE (1) if
 @return - boolean value TRUE (1) or FALSE (0) in (rax)
 */
 checkLine:
+    # save registers used in subroutine
     pushq %rdi
     pushq %rsi
     pushq %r10
     pushq %r11
                                         
-    movq %rdi, %r11                     # store indexY in r11, as rdi will be used to pass arguments to checkForBlock
+    movq %rdi, %r11                     # store indexY in r11, as rdi will be used to pass arguments to getBlockValue
     movq $0, %r10                       # loop counter going from 0 to xSize - 1 (inclusive) 
     loopX:
         cmpq xSize, %r10
         jge lineFull
 
-        movq %r10, %rdi                 # arg 1 of checkForBlock - indexX, which is equal to the current iteration of the loop
-        movq %r11, %rsi                 # arg 2 of checkForBlock - indexY, which is the y of the line being checked
-        call checkForBlock              # get the value at indexX, indexY in the buffer
+        movq %r10, %rdi                 # arg 1 of getBlockValue - indexX, which is equal to the current iteration of the loop
+        movq %r11, %rsi                 # arg 2 of getBlockValue - indexY, which is the y of the line being checked
+        call getBlockValue              # get the value at indexX, indexY in the buffer
 
         cmpq $0, %rax                   # if the value in the buffer is equal to 0, then a spot is empty and the line is not filled
         je lineNotFull                  # exit the loop
@@ -170,16 +183,70 @@ checkLine:
         jmp exitCheckLine
 
     exitCheckLine:
+        # retrieve registers used in subroutine
         popq %r11
         popq %r10
         popq %rsi
         popq %rdi
         ret
 /*
-TO DO
+Copy the buffer values from the line above to this line
+Edge case: if indexY = ySize - 1, then fill line with 0s
+@param - indexY - rdi - the index of the (horizontal) line, i.e. at which height is it positioned
 */
 copyLineAbove:
-    ret
+    # save registers used in subroutine
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %r11
+    pushq %r10
+
+    movq %rdi, %r11                     # store indexY in r11, as rdi will be used to pass arguments to getBlockValue
+    movq %rdi, %r12                     # copy indexY to r12, to later get the indexY of next line 
+    incq %r12                           # indexY of the line above
+    movq $0, %r10                       # loop counter going from 0 to xSize - 1 (inclusive) 
+    
+    cmpq ySize, %r12                    # if next line is out of bounds
+    jge edgeCaseFill0                   # edge case: fill 0s
+
+    # loop for indexY in the range 0 : ySize - 2 (inclusive), loop x from 0 to xSize - 1 (inclusive), then fill current line with the value from above
+    fillNextLine:
+        cmpq xSize, %r10                # if x >= xSize, exit loop, all values already copied
+        jge exitCopyLineAbove
+
+        movq %r10, %rdi                 # arg 1 of getBlockValue - indexX, which is equal to the current iteration of the loop
+        movq %r12, %rsi                 # arg 2 of getBlockValue - indexY, which is the y of the line above
+        call getBlockValue              # get the value at indexX, indexY in the buffer
+        
+        movq %r11, %rsi                 # arg 2 of writeToBufferFromXY - indexY, which is the y of the line being copied to
+        movq %rax, %rdx                 # arg 3 of writeToBufferFromXY - value, which will be written in the cell, here the value returned by getBlockValue
+        call writeToBufferFromXY        # (note: indexX is already in rdi)
+
+        incq %r10                       # get next xIndex
+        jmp fillNextLine                # next loop iteration
+
+    # edge case when indexY = ySize - 1, loop x from 0 to xSize - 1 (inclusive), then fill the line with 0s
+    edgeCaseFill0:
+        cmpq xSize, %r10                # if x >= xSize, exit loop, all values already copied
+        jge exitCopyLineAbove
+        
+        movq %r10, %rdi                 # arg 1 of writeToBufferFromXY - indexX, which is equal to the current iteration of the loop
+        movq %r11, %rsi                 # arg 2 of writeToBufferFromXY - indexY, which is the y of the line being copied to
+        movq $0, %rdx                   # arg 3 of writeToBufferFromXY - value, which will be written in the cell
+        call writeToBufferFromXY
+
+        incq %r10                       # get next xIndex
+        jmp edgeCaseFill0               # next loop iteration
+
+    exitCopyLineAbove:
+        # retrieve registers used in subroutine
+        popq %r11
+        popq %r10
+        popq %rdx
+        popq %rsi
+        popq %rdi        
+        ret
 
 /* 
 TO DO
