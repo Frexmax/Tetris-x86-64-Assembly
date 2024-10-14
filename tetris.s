@@ -7,6 +7,7 @@
 .data
 
 .text
+    charOut: .asciz "Current Key: %c\n"
     out: .asciz "x: %d, y: %d\n"
 
 	.globl	main
@@ -100,16 +101,25 @@ mainGameLoop:
     cmpq $0, %rax                       # if WindowShouldClose returns true (anything else than 0) then exit program
 	jne quitGame                        # quit game
 
-    call getCurrentCommand
+    /*
+    call PollInputEvents
+    call GetKeyPressed                       # get the current key pressed
+    movq $charOut, %rdi
+    movq %rax, %rsi
+    movq $0, %rax
+    call printf
+    */
 
+    call getCurrentCommand
+  
     call BeginDrawing                   # Setup raylib canvas to start drawing
         movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
         
-        # movq $1, %rdi
-        # movq $0, %rsi
-        # movq $0, %rdx
-        # call writeToBufferFromXY
+        movq $1, %rdi
+        movq $0, %rsi
+        movq $0, %rdx
+        call writeToBufferFromXY
 
         movq $0, %rdi
         call gridShift
@@ -121,7 +131,7 @@ mainGameLoop:
     jmp mainGameLoop                    # next iteration of the game
 
 quitGame:
-    call CloseWindow                    # close window
+    # call CloseWindow                    # close window
     epilogue	                        # close stack frame
     movq $0, %rdi                       # error code 0, all successful
     call exit                           

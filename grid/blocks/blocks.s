@@ -1,45 +1,76 @@
 .data
 
 .text
-	.globl	drawBlock
-    .type	drawBlock, @function
+	.globl	spawnBlock
+    .type	spawnBlock, @function
 
-/*
-Draw block cellSize x cellSize at position indexX, indexY in our coordinate system in the raylib window.
-Beforehand indexY is converted to match the raylib coordinate system 
-@param - indexX - rdi - x index of our container (not referring to raylib window positions)
-@param - indexY - rsi - y index of our container (not referring to raylib window positions)
-@param - rdx - color of the block (32-bit RGBA)
+	.globl	checkCanFall
+    .type	checkCanFall, @function
+
+	.globl	checkCanRotate
+    .type	checkCanRotate, @function
+
+	.globl	checkCanGoRight
+    .type	checkCanGoLeft, @function
+
+	.globl	fall
+    .type	fall, @function
+
+	.globl	rotate
+    .type	rotate, @function
+
+	.globl	goRight
+    .type	goRight, @function
+
+	.globl	goLeft
+    .type	goLeft, @function
+
+	.globl	clearTetrino
+    .type	goLeft, @function
+
+	.globl	setTetrino
+    .type	goLeft, @function
+
+
+/* 
+TO DO
 */
-drawBlock:
-    # save registers used in subroutine
-    pushq %rdi
-    pushq %rsi
-    pushq %rdx
-    pushq %rcx
-    pushq %r8
+spawnBlock:
+    ret
 
-    imulq cellSize, %rdi                # scale indexX by cellSize to get pixelX in raylib (arg 1 of raylib DrawRectangle)
+/* 
+TO DO
+*/
+checkCanFall:
+    ret
 
-    # convert y-coordinate from our system to raylib 
-    movq ySize, %rcx                    # store ySize in rcx
-    subq %rsi, %rcx                     # ySize - y
-    subq $1, %rcx                       # ySize - y - 1 <- done because y starts at 0
-    imulq cellSize, %rcx                # get pixelY (in raylib)
-    movq %rcx, %rsi                     # copy pixelY to rsi (arg 2 of raylib DrawRectangle) from rcx
+/* 
+TO DO
+*/
+spawnBlock:
+    ret
 
-    movq %rdx, %r8                      # arg-4 of raylib DrawRectangle - 32-bit RGBA - color of the block     
-    movq cellSize, %rdx                 # arg 2 of raylib DrawRectangle - int - width of block
-    movq cellSize, %rcx                 # arg 3 of raylib DrawRectangle - int - height of block
-    
-    pushq %r9
-    call DrawRectangle                  # call raylib function to draw block in the window 
-    popq %r9
-    
-    # retrieve register used in subroutine
-    popq %r8
-    popq %rcx
-    popq %rdx
-    popq %rsi
-    popq %rdi
+/* 
+TO DO
+*/
+spawnBlock:
+    ret
+
+/* 
+TO DO
+*/
+spawnBlock:
+    ret
+
+
+/* 
+TO DO
+*/
+clearTetrino:
+    ret
+
+/* 
+TO DO
+*/
+setTetrino:
     ret
