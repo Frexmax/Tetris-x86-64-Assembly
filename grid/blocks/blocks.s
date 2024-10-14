@@ -1,3 +1,6 @@
+.include "grid/blocks/t_block/t_block.s"
+.include "grid/blocks/block_config.s"
+
 .data
 
 .text
@@ -33,7 +36,9 @@
 
 
 /* 
-TO DO
+Initialize a1 (x and y) to a4, call function for the specific tetrino
+Set rotation state 1
+@param - rdi - tetrino type
 */
 spawnBlock:
     ret

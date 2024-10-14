@@ -1,33 +1,33 @@
 .text
 	.globl	tBlockSpawnBlock
-    .type	spawnBlock, @function
+    .type	tBlockSpawnBlock, @function
 
 	.globl	tBlockCheckCanFall
-    .type	checkCanFall, @function
+    .type	tBlockCheckCanFall, @function
 
 	.globl	tBlockCheckCanRotate
-    .type	checkCanRotate, @function
+    .type	tBlockCheckCanRotate, @function
 
 	.globl	tBlockCheckCanGoRight
-    .type	checkCanGoLeft, @function
+    .type	tBlockCheckCanGoRight, @function
 
 	.globl	tBlockFall
-    .type	fall, @function
+    .type	tBlockFall, @function
 
 	.globl	tBlockRotate
-    .type	rotate, @function
+    .type	tBlockRotate, @function
 
 	.globl	tBlockGoRight
-    .type	goRight, @function
+    .type	tBlockGoRight, @function
 
 	.globl	tBlockGoLeft
-    .type	goLeft, @function
+    .type	tBlockGoLeft, @function
 
 	.globl	tBlockClearTetrino
-    .type	clearTetrino, @function
+    .type	tBlockClearTetrino, @function
 
 	.globl	tBlockSetTetrino
-    .type	setTetrino, @function
+    .type	tBlockSetTetrino, @function
 
 
 /* 
@@ -55,26 +55,28 @@ tBlockSpawnBlock:
     ret
 
 /* 
-TO DO
+Returns TRUE if block can fall, depending on the current position and rotation state, else 0
+@return - boolean value TRUE (1) or FALSE (0) in (rax)
 */
 tBlockCheckCanFall:
+    pushq %rdi
+    pushq %rsi
+
     cmpq $1, currentState
     je tBlockCheckCanFallState1     
 
     cmpq $2, currentState
-    je tBlockCheckCanFallState1     
+    je tBlockCheckCanFallState2     
 
     cmpq $3, currentState
-    je tBlockCheckCanFallState1     
+    je tBlockCheckCanFallState3     
 
     cmpq $4, currentState
-    je tBlockCheckCanFallState1     
+    je tBlockCheckCanFallState4     
 
     jmp tBlockCheckCanFallInvalidState
 
-    tBlockCheckCanFallState1:
-        movq $1, $1
-        
+    tBlockCheckCanFallState1:        
         # condition 1 - check if coordinate within the grid 
         movq a4Y, %rdi              
         decq %rdi
@@ -85,25 +87,25 @@ tBlockCheckCanFall:
         movq a1X, %rdi
         movq a1Y, %rsi
         decq %rsi
-        getBlockValue
+        call getBlockValue
         cmpq $0, %rax
-        jg tBlockCheckCanFallReturnFalse
+        jne tBlockCheckCanFallReturnFalse
 
         # condition 3 - 
         movq a3X, %rdi
         movq a3Y, %rsi
         decq %rsi
-        getBlockValue
+        call getBlockValue
         cmpq $0, %rax
-        jg tBlockCheckCanFallReturnFalse
+        jne tBlockCheckCanFallReturnFalse
 
         # condition 4 - 
         movq a4X, %rdi
         movq a4Y, %rsi
         decq %rsi
-        getBlockValue
+        call getBlockValue
         cmpq $0, %rax
-        jg tBlockCheckCanFallReturnFalse
+        jne tBlockCheckCanFallReturnFalse
 
         jmp tBlockCheckCanFallReturnTrue
 
@@ -118,17 +120,17 @@ tBlockCheckCanFall:
         movq a4X, %rdi
         movq a4Y, %rsi
         decq %rsi
-        getBlockValue
+        call getBlockValue
         cmpq $0, %rax
-        jg tBlockCheckCanFallReturnFalse
+        jne tBlockCheckCanFallReturnFalse
 
         # condition 3 - 
         movq a3X, %rdi
         movq a3Y, %rsi
         decq %rsi
-        getBlockValue
+        call getBlockValue
         cmpq $0, %rax
-        jg tBlockCheckCanFallReturnFalse
+        jne tBlockCheckCanFallReturnFalse
 
         # condition 4 - not needed, because of tetrino position 
 
@@ -145,25 +147,25 @@ tBlockCheckCanFall:
         movq a1X, %rdi
         movq a1Y, %rsi
         decq %rsi
-        getBlockValue
+        call getBlockValue
         cmpq $0, %rax
-        jg tBlockCheckCanFallReturnFalse
+        jne tBlockCheckCanFallReturnFalse
 
         # condition 3 - 
         movq a2X, %rdi
         movq a2Y, %rsi
         decq %rsi
-        getBlockValue
+        call getBlockValue
         cmpq $0, %rax
-        jg tBlockCheckCanFallReturnFalse
+        jne tBlockCheckCanFallReturnFalse
 
         # condition 4 - 
         movq a3X, %rdi
         movq a3Y, %rsi
         decq %rsi
-        getBlockValue
+        call getBlockValue
         cmpq $0, %rax
-        jg tBlockCheckCanFallReturnFalse
+        jne tBlockCheckCanFallReturnFalse
 
         jmp tBlockCheckCanFallReturnTrue
 
@@ -178,17 +180,17 @@ tBlockCheckCanFall:
         movq a1X, %rdi
         movq a1Y, %rsi
         decq %rsi
-        getBlockValue
+        call getBlockValue
         cmpq $0, %rax
-        jg tBlockCheckCanFallReturnFalse
+        jne tBlockCheckCanFallReturnFalse
 
         # condition 3 - 
         movq a4X, %rdi
         movq a4Y, %rsi
         decq %rsi
-        getBlockValue
+        call getBlockValue
         cmpq $0, %rax
-        jg tBlockCheckCanFallReturnFalse
+        jne tBlockCheckCanFallReturnFalse
 
         # condition 4 - not needed, because of tetrino position 
 
@@ -207,18 +209,464 @@ tBlockCheckCanFall:
         jmp exitTBlockCheckFall    
 
     exitTBlockCheckFall:
+        popq %rsi
+        popq %rdi
         ret
+
+/* 
+Returns TRUE if block can rotate, depending on the current position and rotation state, else 0
+@return - boolean value TRUE (1) or FALSE (0) in (rax)
+*/
+tBlockCheckCanRotate:
+    pushq %rdi
+    pushq %rsi
+
+    cmpq $1, currentState
+    je tBlockCheckCanRotateState1     
+
+    cmpq $2, currentState
+    je tBlockCheckCanRotateState2     
+
+    cmpq $3, currentState
+    je tBlockCheckCanRotateState3     
+
+    cmpq $4, currentState
+    je tBlockCheckCanRotateState4     
+
+    jmp tBlockCheckCanRotateInvalidState
+
+    tBlockCheckCanRotateState1:        
+        # condition 1
+        movq a4Y, %rdi              
+        decq %rdi
+        cmpq $0, %rdi
+        jl tBlockCheckCanRotateReturnFalse
+
+        # condition 2 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        decq %rsi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanRotateReturnFalse
+
+        # condition 3 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        subq $2, %rsi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanRotateReturnFalse
+        
+        jmp tBlockCheckCanRotateReturnTrue
+
+    tBlockCheckCanRotateState2:
+        # condition 1 - check if coordinate within the grid 
+        movq a4X, %rdi              
+        decq %rdi
+        cmpq $0, %rdi
+        jl tBlockCheckCanRotateReturnFalse
+
+        # condition 2 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        decq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanRotateReturnFalse
+
+        # condition 3 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        subq $2, %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanRotateReturnFalse
+
+        jmp tBlockCheckCanRotateReturnTrue
+
+    tBlockCheckCanRotateState3:
+        # condition 1 - check if coordinate within the grid 
+        movq a4Y, %rdi              
+        incq %rdi
+        cmpq ySize, %rdi
+        jge tBlockCheckCanFallReturnFalse
+
+        # condition 2 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        incq %rsi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanRotateReturnFalse
+
+        # condition 3 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        addq $2, %rsi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanRotateReturnFalse
+
+        jmp tBlockCheckCanRotateReturnTrue
+
+    tBlockCheckCanRotateState4:
+        # condition 1 - check if coordinate within the grid 
+        movq a4X, %rdi              
+        incq a4X
+        cmpq xSize, %rdi
+        jge tBlockCheckCanRotateReturnFalse
+
+        # condition 2 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        incq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanRotateReturnFalse
+
+        # condition 3 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        addq $2, %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanRotateReturnFalse
+
+        jmp tBlockCheckCanRotateReturnTrue 
+
+    tBlockCheckCanRotateInvalidState:
+        movq $-1, %rax
+        jmp exitTBlockCheckRotate
+
+    tBlockCheckCanRotateReturnTrue:
+        movq TRUE, %rax
+        jmp exitTBlockCheckRotate    
+
+    tBlockCheckCanRotateReturnFalse:
+        movq FALSE, %rax
+        jmp exitTBlockCheckRotate    
+
+    exitTBlockCheckRotate:
+        popq %rsi
+        popq %rdi
+        ret
+
+
+/*
+TO DO
+*/
+tBlockCheckCanGoRight:
+    pushq %rdi
+    pushq %rsi
+
+    cmpq $1, currentState
+    je tBlockCheckCanGoRightState1     
+
+    cmpq $2, currentState
+    je tBlockCheckCanGoRightState2     
+
+    cmpq $3, currentState
+    je tBlockCheckCanGoRightState3     
+
+    cmpq $4, currentState
+    je tBlockCheckCanGoRightState4     
+
+    jmp tBlockCheckCanGoRightInvalidState
+
+    tBlockCheckCanGoRightState1:        
+        # condition 1
+        movq a3X, %rdi              
+        incq %rdi
+        cmpq xSize, %rdi
+        jge tBlockCheckCanGoRightReturnFalse
+
+        # condition 2 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        incq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoRightReturnFalse
+
+        # condition 3 - 
+        movq a4X, %rdi
+        movq a4Y, %rsi
+        incq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoRightReturnFalse
+        
+        jmp tBlockCheckCanGoRightReturnTrue
+
+    tBlockCheckCanGoRightState2:        
+        # condition 1
+        movq a1X, %rdi              
+        incq %rdi
+        cmpq xSize, %rdi
+        jge tBlockCheckCanGoRightReturnFalse
+
+        # condition 2 - 
+        movq a1X, %rdi
+        movq a1Y, %rsi
+        incq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoRightReturnFalse
+
+        # condition 3 - 
+        movq a2X, %rdi
+        movq a2Y, %rsi
+        incq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoRightReturnFalse
+
+        # condition 4  
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        incq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoRightReturnFalse
+
+        jmp tBlockCheckCanGoRightReturnTrue
+
+    tBlockCheckCanGoRightState3:        
+        # condition 1
+        movq a1X, %rdi              
+        incq %rdi
+        cmpq xSize, %rdi
+        jge tBlockCheckCanGoRightReturnFalse
+
+        # condition 2 - 
+        movq a1X, %rdi
+        movq a1Y, %rsi
+        incq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoRightReturnFalse
+
+        # condition 3 - 
+        movq a4X, %rdi
+        movq a4Y, %rsi
+        incq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoRightReturnFalse
+        
+        jmp tBlockCheckCanGoRightReturnTrue
+
+    tBlockCheckCanGoRightState4:        
+        # condition 1
+        movq a4X, %rdi              
+        incq %rdi
+        cmpq xSize, %rdi
+        jge tBlockCheckCanGoRightReturnFalse
+
+        # condition 2 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        incq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoRightReturnFalse
+
+        # condition 3 - 
+        movq a4X, %rdi
+        movq a4Y, %rsi
+        incq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoRightReturnFalse
+
+        # condition 4  
+        movq a1X, %rdi
+        movq a1Y, %rsi
+        incq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoRightReturnFalse
+
+        jmp tBlockCheckCanGoRightReturnTrue
+
+    tBlockCheckCanGoRightReturnTrue:
+        movq TRUE, %rax
+        jmp exitTBlockCheckCanGoRight
+    
+    tBlockCheckCanGoRightReturnFalse:
+        movq FALSE, %rax
+        jmp exitTBlockCheckCanGoRight
+
+    tBlockCheckCanGoRightInvalidState:
+        movq -1, %rax
+        jmp exitTBlockCheckCanGoRight
+
+    exitTBlockCheckCanGoRight:
+        popq %rsi
+        popq %rdi
+        ret
+
+
+tBlockCheckCanGoLeftt:
+    pushq %rdi
+    pushq %rsi
+
+    cmpq $1, currentState
+    je tBlockCheckCanGoLeftState1     
+
+    cmpq $2, currentState
+    je tBlockCheckCanGoLeftState2     
+
+    cmpq $3, currentState
+    je tBlockCheckCanGoLeftState3     
+
+    cmpq $4, currentState
+    je tBlockCheckCanGoLeftState4     
+
+    jmp tBlockCheckCanGoLeftInvalidState
+
+    tBlockCheckCanGoLeftState1:        
+        # condition 1
+        movq a1X, %rdi              
+        decq %rdi
+        cmpq $0, %rdi
+        jl tBlockCheckCanGoLeftReturnFalse
+
+        # condition 2 - 
+        movq a4X, %rdi
+        movq a4Y, %rsi
+        decq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoLeftReturnFalse
+
+        # condition 3 - 
+        movq a1X, %rdi
+        movq a1Y, %rsi
+        decq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoLeftReturnFalse
+        
+        jmp tBlockCheckCanGoLeftReturnTrue
+
+    tBlockCheckCanGoLeftState2:        
+        # condition 1
+        movq a4X, %rdi              
+        decq %rdi
+        cmpq xSize, %rdi
+        jge tBlockCheckCanGoLeftReturnFalse
+
+        # condition 2 - 
+        movq a1X, %rdi
+        movq a1Y, %rsi
+        decq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoLeftReturnFalse
+
+        # condition 3 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        decq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoLeftReturnFalse
+
+        # condition 4  
+        movq a4X, %rdi
+        movq a4Y, %rsi
+        decq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoLeftReturnFalse
+
+        jmp tBlockCheckCanGoLeftReturnTrue
+
+    tBlockCheckCanGoLeftState3:        
+        # condition 1
+        movq a3X, %rdi              
+        decq %rdi
+        cmpq xSize, %rdi
+        jge tBlockCheckCanGoLeftReturnFalse
+
+        # condition 2 - 
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        decq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoLeftReturnFalse
+
+        # condition 3 - 
+        movq a4X, %rdi
+        movq a4Y, %rsi
+        decq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoLeftReturnFalse
+        
+        jmp tBlockCheckCanGoLeftReturnTrue
+
+    tBlockCheckCanGoLeftState4:        
+        # condition 1
+        movq a1X, %rdi              
+        decq %rdi
+        cmpq xSize, %rdi
+        jge tBlockCheckCanGoLeftReturnFalse
+
+        # condition 2 - 
+        movq a1X, %rdi
+        movq a1Y, %rsi
+        decq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoLeftReturnFalse
+
+        # condition 3 - 
+        movq a2X, %rdi
+        movq a2Y, %rsi
+        decq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoLeftReturnFalse
+
+        # condition 4  
+        movq a3X, %rdi
+        movq a3Y, %rsi
+        decq %rdi
+        call getBlockValue
+        cmpq $0, %rax
+        jne tBlockCheckCanGoLeftReturnFalse
+
+        jmp tBlockCheckCanGoLeftReturnTrue
+
+    tBlockCheckCanGoLeftReturnTrue:
+        movq TRUE, %rax
+        jmp exitTBlockCheckCanGoLeft
+    
+    tBlockCheckCanGoLeftReturnFalse:
+        movq FALSE, %rax
+        jmp exitTBlockCheckCanGoLeft
+
+    tBlockCheckCanGoLeftInvalidState:
+        movq -1, %rax
+        jmp exitTBlockCheckCanGoLeft
+
+    exitTBlockCheckCanGoLeft:
+        popq %rsi
+        popq %rdi
+        ret
+
 /* 
 TO DO
 */
-clearTetrino:
-    state2:
-
-
+tBlockClearTetrino:
     ret
 
 /* 
 TO DO
 */
-setTetrino:
+tBlockSetTetrino:
     ret
