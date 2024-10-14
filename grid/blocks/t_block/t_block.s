@@ -508,6 +508,9 @@ tBlockCheckCanGoRight:
         ret
 
 
+/*
+TO DO
+*/
 tBlockCheckCanGoLeftt:
     pushq %rdi
     pushq %rsi
@@ -659,11 +662,153 @@ tBlockCheckCanGoLeftt:
         popq %rdi
         ret
 
+# Can clear and set in the fall, go right, go left, rotate subroutines
+/*
+TO DO
+*/
+tBlockFall:
+    decq a1Y
+    decq a2Y
+    decq a3Y
+    decq a4Y
+    ret
+    
+/*
+TO DO
+*/
+tBlockGoLeft:
+    decq a1X
+    decq a2X
+    decq a3X
+    decq a4X
+    ret
+
+/*
+TO DO
+*/
+tBlockGoRight:
+    incq a1X
+    incq a2X
+    incq a3X
+    incq a4X
+    ret
+
+/*
+TO DO
+*/
+tBlockRotate:
+    pushq %rdi
+
+    cmpq $1, currentState
+    je tBlockRotateState1     
+
+    cmpq $2, currentState
+    je tBlockRotateState2     
+
+    cmpq $3, currentState
+    je tBlockRotateState3     
+
+    cmpq $4, currentState
+    je tBlockRotateState4
+
+    jmp exitTBlockCheckRotate
+
+    tBlockRotateState1:
+        movq $2, currentState
+    
+        # Note: may be in seperate subroutine
+        movq a3X, %rdi
+        movq %rdi, a1X
+
+        movq a3Y, %rdi
+        movq %rdi, a1Y
+
+        movq a3X, %rdi
+        movq %rdi, a2X
+
+        movq a3Y, %rdi
+        decq %rdi
+        movq %rdi, a2Y
+
+        movq a3Y, %rdi
+        subq $2, %rdi
+        movq %rdi, a3Y
+
+        jmp exitTBlockRotate
+            
+    tBlockRotateState2:
+        movq $3, currentState
+
+        movq a3X, %rdi
+        movq %rdi, a1X
+        movq a3Y, %rdi
+        movq %rdi, a1Y
+
+        movq a3X, %rdi
+        decq %rdi
+        movq %rdi, a2X
+
+        movq a3Y, %rdi
+        movq %rdi, a2Y
+
+        movq a3X, %rdi
+        subq $2, %rdi
+        movq %rdi, a3X
+
+        jmp exitTBlockRotate
+
+    tBlockRotateState3:
+        movq $4, currentState
+
+        movq a3X, %rdi
+        movq %rdi, a1X
+        movq a3Y, %rdi
+        movq %rdi, a1Y
+
+        movq a3X, %rdi
+        movq %rdi, a2X
+
+        movq a3Y, %rdi
+        incq %rdi
+        movq %rdi, a2Y
+
+        movq a3Y, %rdi
+        addq $2, %rdi
+        movq %rdi, a3Y
+        
+        jmp exitTBlockRotate  
+
+    tBlockRotateState4:
+        movq $1, currentState
+
+        movq a3X, %rdi
+        movq %rdi, a1X
+        movq a3Y, %rdi
+        movq %rdi, a1Y
+
+        movq a3Y, %rdi
+        movq %rdi, a2Y
+
+        movq a3X, %rdi
+        incq %rdi
+        movq %rdi, a2X
+
+        movq a3X, %rdi
+        addq $2, %rdi
+        movq %rdi, a3X
+
+        jmp exitTBlockRotate    
+
+    exitTBlockRotate:
+        popq %rdi
+        ret
+
+
 /* 
 TO DO
 */
 tBlockClearTetrino:
-        pushq %rdi
+    pushq %rdi
     pushq %rsi
 
     movq a1X, %rdi
@@ -690,7 +835,8 @@ tBlockClearTetrino:
     popq %rsi
     ret
 
-/* 
+/*
+TO DO 
 */
 tBlockSetTetrino:
     pushq %rdi
