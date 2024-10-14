@@ -26,10 +26,10 @@
     .type	goLeft, @function
 
 	.globl	clearTetrino
-    .type	goLeft, @function
+    .type	clearTetrino, @function
 
 	.globl	setTetrino
-    .type	goLeft, @function
+    .type	setTetrino, @function
 
 
 /* 

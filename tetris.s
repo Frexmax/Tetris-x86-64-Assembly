@@ -109,8 +109,7 @@ mainGameLoop:
     movq $0, %rax
     call printf
     */
-
-    call getCurrentCommand
+    # call getCurrentCommand
   
     call BeginDrawing                   # Setup raylib canvas to start drawing
         movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color
