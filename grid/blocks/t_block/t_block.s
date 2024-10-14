@@ -663,10 +663,59 @@ tBlockCheckCanGoLeftt:
 TO DO
 */
 tBlockClearTetrino:
+        pushq %rdi
+    pushq %rsi
+
+    movq a1X, %rdi
+    movq a1Y, %rsi
+    movq $0, %rdx
+    call writeToBufferFromXY
+
+    movq a2X, %rdi
+    movq a2Y, %rsi
+    movq $0, %rdx
+    call writeToBufferFromXY
+
+    movq a3X, %rdi
+    movq a3Y, %rsi
+    movq $0, %rdx
+    call writeToBufferFromXY
+
+    movq a4X, %rdi
+    movq a4Y, %rsi
+    movq $0, %rdx
+    call writeToBufferFromXY
+
+    popq %rdi
+    popq %rsi
     ret
 
 /* 
-TO DO
 */
 tBlockSetTetrino:
+    pushq %rdi
+    pushq %rsi
+
+    movq a1X, %rdi
+    movq a1Y, %rsi
+    movq $1, %rdx
+    call writeToBufferFromXY
+
+    movq a2X, %rdi
+    movq a2Y, %rsi
+    movq $1, %rdx
+    call writeToBufferFromXY
+
+    movq a3X, %rdi
+    movq a3Y, %rsi
+    movq $1, %rdx
+    call writeToBufferFromXY
+
+    movq a4X, %rdi
+    movq a4Y, %rsi
+    movq $1, %rdx
+    call writeToBufferFromXY
+
+    popq %rdi
+    popq %rsi
     ret
