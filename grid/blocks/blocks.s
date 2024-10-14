@@ -43,26 +43,6 @@ TO DO
 */
 checkCanFall:
     ret
-
-/* 
-TO DO
-*/
-spawnBlock:
-    ret
-
-/* 
-TO DO
-*/
-spawnBlock:
-    ret
-
-/* 
-TO DO
-*/
-spawnBlock:
-    ret
-
-
 /* 
 TO DO
 */
