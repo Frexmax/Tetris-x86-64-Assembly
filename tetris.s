@@ -7,8 +7,12 @@
 .data
 
 .text
-    charOut: .asciz "Current Key: %c\n"
+    keyOut: .asciz "Current Key: %d\n"
+    printRegisters: .asciz "RAX: %d, RDI, %d, RSI, %d, RDX: %d\n"
     out: .asciz "x: %d, y: %d\n"
+    testStringRight: .asciz "WENT RIGHT\n"
+    testStringLeft: .asciz "WENT LEFT\n"
+    testStringUp: .asciz "WENT UP\n"
 
 	.globl	main
 	.type	main, @function
@@ -100,17 +104,9 @@ mainGameLoop:
     call WindowShouldClose              # check if the window should be closed: when escape key pressed or window close icon clicked
     cmpq $0, %rax                       # if WindowShouldClose returns true (anything else than 0) then exit program
 	jne quitGame                        # quit game
+    
+    call takeAction
 
-    /*
-    call PollInputEvents
-    call GetKeyPressed                       # get the current key pressed
-    movq $charOut, %rdi
-    movq %rax, %rsi
-    movq $0, %rax
-    call printf
-    */
-    # call getCurrentCommand
-  
     call BeginDrawing                   # Setup raylib canvas to start drawing
         movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
@@ -126,11 +122,56 @@ mainGameLoop:
         call drawGrid
 
     call EndDrawing                     # End canvas drawing
-
+    
     jmp mainGameLoop                    # next iteration of the game
 
 quitGame:
-    # call CloseWindow                    # close window
+    call CloseWindow                    # close window
     epilogue	                        # close stack frame
     movq $0, %rdi                       # error code 0, all successful
     call exit                           
+
+
+/* 
+TO DO
+*/
+takeAction:
+    pushq %rdi
+    
+    call GetKeyPressed                  # get currently pressed key in rax, 0 if none 
+
+    cmpq KEY_RIGHT, %rax
+    je moveRightCommand
+
+    cmpq KEY_LEFT, %rax
+    je moveLeftCommand
+
+    cmpq KEY_UP, %rax
+    je moveUpCommand
+
+    jmp exitTakeAction
+
+    moveRightCommand:
+        movq $testStringRight, %rdi
+        movq $0, %rax   
+        call printf
+
+        jmp exitTakeAction
+
+    moveLeftCommand:
+        movq $testStringLeft, %rdi
+        movq $0, %rax
+        call printf
+
+        jmp exitTakeAction
+
+    moveUpCommand:
+        movq $testStringUp, %rdi
+        movq $0, %rax
+        call printf
+
+        jmp exitTakeAction
+
+    exitTakeAction:
+        popq %rdi
+        ret

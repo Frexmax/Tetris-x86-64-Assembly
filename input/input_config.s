@@ -4,5 +4,7 @@
     UP: .quad 3                                 
     down: .quad 4
 
-    KEY_RIGHT: .quad 262                # Key: Cursor right
-    KEY_LEFT: .quad 263                 # Key: Cursor left
+    KEY_UP: .quad 265                   # Key: arrow up
+    KEY_DOWN: .quad 264                 # Key: arrow down
+    KEY_LEFT: .quad 263                 # Key: arrow left
+    KEY_RIGHT: .quad 262                # Key: arrow right
