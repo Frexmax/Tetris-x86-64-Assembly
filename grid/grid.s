@@ -58,39 +58,6 @@ drawGrid:
     pushq %r10
     pushq %r11
 
-#    # TEST getBlockValue
-#    movq $1, %rdi                       
-#    movq $0, %rsi
-#    call getBlockValue                  # return value of #cell 1 -> 23
-#
-#    movq $1, %rdi                       
-#    movq $1, %rsi
-#    call getBlockValue                  # return value of #cell 11 -> 0
-#
-#    movq $0, %rdi
-#    movq $1, %rsi
-#    call getBlockValue                  # return value of #cell 10 -> 1
-#
-#    # TEST checkLine
-#    movq $0, %rdi       
-#    call checkLine                      # returns FALSE (0)
-#
-#    movq $3, %rdi
-#    call checkLine                      # returns TRUE (1)
-#
-#    movq $2, %rdi
-#    call checkLine                      # return FALSE (0)
-#
-#    # TEST checkLine
-#    movq $2, %rdi
-#    call copyLineAbove
-#
-#    movq $3, %rdi
-#    call copyLineAbove
-#
-#    movq $19, %rdi
-#    call copyLineAbove
-#
     movq $0, %r9                        # initialize loop at #cell = 0
     loopCellNumber:
         cmpq cellNumber, %r9            # if #cell >= cellNumber, exit loop

@@ -36,26 +36,159 @@
 
 
 /* 
-Initialize a1 (x and y) to a4, call function for the specific tetrino
-Set rotation state 1
+Wrapper function for the tetrino spawnBlock subroutine, 
+depending on the type, the subroutine for the specific tetrino will be called
 @param - rdi - tetrino type
 */
 spawnBlock:
-    ret
+    cmpq tBlockType, %rdi               # check if the current block is a T-block
+    je tBlockSpawnBlock                 # if it is then call the spawnBlock subro
+
+    jmp exitSpawnBlock
+
+    exitSpawnBlock:
+        ret
 
 /* 
-TO DO
+Wrapper function for the tetrino checkCanFall subroutine, 
+depending on the type, the subroutine for the specific tetrino will be called
+@param - rdi - tetrino type
+@return - boolean value TRUE (1) => fall possible, or FALSE (0) => fall impossible, in (rax) for this specific type of tetrino
 */
 checkCanFall:
-    ret
-/* 
-TO DO
+    cmpq tBlockType, %rdi                   # check if the current block is a T-block
+    je tBlockCheckCanFall                   # if it is then call the checkCanFall subroutine for the T-block
+                                            
+    jmp exitCheckCanFall
+
+    exitCheckCanFall:
+        ret
+
+/*
+Wrapper function for the tetrino checkCanRotate subroutine, 
+depending on the type, the subroutine for the specific tetrino will be called
+@param - rdi - tetrino type
+@return - boolean value TRUE (1) => rotation possible, or FALSE (0) => rotation impossible, in (rax) for this specific type of tetrino
 */
-clearTetrino:
-    ret
+checkCanRotate:
+    cmpq tBlockType, %rdi
+    je tBlockCheckCanRotate
+
+    jmp exitCheckCanRotate
+
+    exitCheckCanRotate:
+        ret
 
 /* 
-TO DO
+Wrapper function for the tetrino checkCanGoRight subroutine, 
+depending on the type, the subroutine for the specific tetrino will be called
+@param - rdi - tetrino type
+@return - boolean value TRUE (1) => going right possible, or FALSE (0) => going right impossible, in (rax) for this specific type of tetrino
+*/
+checkCanGoRight:
+    cmpq tBlockType, %rdi
+    je tBlockCheckCanGoRight
+
+    jmp exitCheckCanGoRight
+
+    exitCheckCanGoRight:
+        ret
+
+/*
+Wrapper function for the tetrino checkCanGoLeft subroutine, 
+depending on the type, the subroutine for the specific tetrino will be called
+@param - rdi - tetrino type
+@return - boolean value TRUE (1) => going left possible, or FALSE (0) => going left impossible, in (rax) for this specific type of tetrino
+*/
+checkCanGoLeft:
+    cmpq tBlockType, %rdi
+    je tBlockCheckCanGoLeft
+
+    jmp exitCheckCanGoLeft
+    
+    exitCheckCanGoLeft:
+        ret
+
+/* 
+Wrapper function for the tetrino fall subroutine, 
+depending on the type, the subroutine for the specific tetrino will be called
+@param - rdi - tetrino type
+*/
+fall:
+    cmpq tBlockType, %rdi
+    je tBlockFall
+
+    jmp exitFall
+    
+    exitFall:
+        ret
+
+/* 
+Wrapper function for the tetrino rotate subroutine, 
+depending on the type, the subroutine for the specific tetrino will be called
+@param - rdi - tetrino type
+*/
+rotate:
+    cmpq tBlockType, %rdi
+    je tBlockRotate
+
+    jmp exitRotate
+
+    exitRotate:
+        ret
+
+/* 
+Wrapper function for the tetrino goRight subroutine, 
+depending on the type, the subroutine for the specific tetrino will be called
+@param - rdi - tetrino type
+*/
+goRight:
+    cmpq tBlockType, %rdi
+    je tBlockGoRight
+
+    jmp exitGoRight
+
+    exitGoRight:
+        ret
+
+/* 
+Wrapper function for the tetrino goLeft subroutine, 
+depending on the type, the subroutine for the specific tetrino will be called
+@param - rdi - tetrino type
+*/
+goLeft:
+    cmpq tBlockType, %rdi
+    je tBlockGoLeft
+
+    jmp exitGoLeft
+
+    exitGoLeft:
+        ret
+
+/* 
+Wrapper function for the tetrino clearTetrino subroutine, 
+depending on the type, the subroutine for the specific tetrino will be called
+@param - rdi - tetrino type
+*/
+clearTetrino:
+    cmpq tBlockType, %rdi
+    je tBlockClearTetrino
+
+    jmp exitClearTetrino
+
+    exitClearTetrino:
+        ret
+
+/* 
+Wrapper function for the tetrino setTetrino subroutine, 
+depending on the type, the subroutine for the specific tetrino will be called
+@param - rdi - tetrino type
 */
 setTetrino:
-    ret
+    cmpq tBlockType, %rdi
+    je tBlockSetTetrino
+
+    jmp exitSetTetrino
+
+    exitSetTetrino:
+        ret

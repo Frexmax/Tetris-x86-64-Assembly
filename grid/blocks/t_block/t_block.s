@@ -11,6 +11,9 @@
 	.globl	tBlockCheckCanGoRight
     .type	tBlockCheckCanGoRight, @function
 
+    .globl tBlockCheckCanGoLeft
+    .type tBlockCheckCanGoLeft, @function
+
 	.globl	tBlockFall
     .type	tBlockFall, @function
 
@@ -511,7 +514,7 @@ tBlockCheckCanGoRight:
 /*
 TO DO
 */
-tBlockCheckCanGoLeftt:
+tBlockCheckCanGoLeft:
     pushq %rdi
     pushq %rsi
 

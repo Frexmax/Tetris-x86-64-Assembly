@@ -1,4 +1,7 @@
 .data
+    # define type values for different tetrinos
+    tBlockType: .quad 1        
+
     currentBlockType: .quad 1           # the type of block that is currently falling, e.g. 1  == tBlock
     currentState: .quad 1               # rotation state of the current tetrino
     fallCounter: .quad 0
