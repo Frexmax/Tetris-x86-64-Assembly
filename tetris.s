@@ -3,6 +3,7 @@
 .include "colors/colors.s"
 .include "config/config.s"
 .include "grid/grid.s"
+.include "audio/audio.s"
 
 .data
 
@@ -26,6 +27,12 @@ main:
     movq $windowTitle, %rdx             # arg 3 - string - message
     call InitWindow                     # call raylib to initialize window
 
+    call InitAudioDevice                
+    setUpAudio                          # macro to get music struct
+
+    passMusicStruct                     # pass received music struct as argument
+    call PlayMusicStream                # play music
+    
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
     
@@ -105,6 +112,9 @@ mainGameLoop:
     cmpq $0, %rax                       # if WindowShouldClose returns true (anything else than 0) then exit program
 	jne quitGame                        # quit game
     
+    passMusicStruct
+    call UpdateMusicStream
+
     call takeAction
 
     call BeginDrawing                   # Setup raylib canvas to start drawing
@@ -127,6 +137,7 @@ mainGameLoop:
 
 quitGame:
     call CloseWindow                    # close window
+    call CloseAudioDevice
     epilogue	                        # close stack frame
     movq $0, %rdi                       # error code 0, all successful
     call exit                           
