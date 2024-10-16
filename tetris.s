@@ -42,10 +42,7 @@ main:
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
 
-    # setUpFallingInfo
-    movq fallingRatePerSecond, %rdi
-    imulq targetFPS, %rdi
-    movq %rdi, framesPerFall
+    setUpFallingInfo
 
     movq currentBlockType, %rdi
     call spawnBlock

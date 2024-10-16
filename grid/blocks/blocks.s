@@ -4,7 +4,7 @@
 .data
     fallingCounter: .quad 0                   # counter to keep track how many game loops were skipped before the next fall update
     fallingRatePerSecond: .quad 1             # how many times to update the fall per second
-    framesPerFall: .quad 
+    framesPerFall: .quad 0
 
 .text
 	.globl	spawnBlock
