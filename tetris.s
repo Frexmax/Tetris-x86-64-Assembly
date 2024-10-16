@@ -41,8 +41,11 @@ main:
 
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
-    
 
+    movq currentBlockType, %rdi
+    call spawnBlock
+
+/*
 movq $buffer, %r9
     movb $0, (%r9)
     movb $23, 1(%r9)
@@ -109,7 +112,7 @@ movq $buffer, %r9
     movb $0, 197(%r9)
     movb $0, 198(%r9)
     movb $0, 199(%r9)
-
+ */
 
     jmp mainGameLoop                    # go to main game loop 
 
@@ -121,21 +124,21 @@ mainGameLoop:
     passMusicStruct                     # pass music struct
     call UpdateMusicStream              # play the next part of the music
 
-    call takeAction
-
     call tryFall
+
+    call takeAction
         
     call BeginDrawing                   # Setup raylib canvas to start drawing
         movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
         
-        movq $1, %rdi
-        movq $0, %rsi
-        movq $0, %rdx
-        call writeToBufferFromXY
+        // movq $1, %rdi
+        // movq $0, %rsi
+        // movq $0, %rdx
+        // call writeToBufferFromXY
 
-        movq $0, %rdi
-        call gridShift
+        // movq $0, %rdi
+        // call gridShift
 
         call drawGrid
 
@@ -180,8 +183,20 @@ tryFall:
         call checkCanFall               # returns if moving left is possible
         
         cmpq TRUE, %rax                 # if moving left is possible:
-        call fall                       # then move the tetrino left
-    
+        je executeFall
+        jmp checkGameOver
+        
+        executeFall:
+            call fall                       # then move the tetrino left
+            jmp exitTryFall
+
+        checkGameOver:
+            movq currentBlockType, %rdi
+            call spawnBlock
+            jmp exitTryFall
+
+        jmp exitTryFall
+
     exitTryFall:
         popq %rdi
         ret
