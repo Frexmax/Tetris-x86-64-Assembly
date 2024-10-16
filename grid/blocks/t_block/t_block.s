@@ -39,7 +39,7 @@ Set rotation state to 1
 */
 tBlockSpawnBlock:
     movq $1, currentState
-    
+
     # point a1
     movq $4, a1X                        
     movq $19, a1Y                        
@@ -563,8 +563,8 @@ tBlockCheckCanGoLeft:
         # condition 1
         movq a4X, %rdi              
         decq %rdi
-        cmpq xSize, %rdi
-        jge tBlockCheckCanGoLeftReturnFalse
+        cmpq $0 , %rdi
+        jl tBlockCheckCanGoLeftReturnFalse
 
         # condition 2 - 
         movq a1X, %rdi
@@ -596,8 +596,8 @@ tBlockCheckCanGoLeft:
         # condition 1
         movq a3X, %rdi              
         decq %rdi
-        cmpq xSize, %rdi
-        jge tBlockCheckCanGoLeftReturnFalse
+        cmpq $0, %rdi
+        jl tBlockCheckCanGoLeftReturnFalse
 
         # condition 2 - 
         movq a3X, %rdi
@@ -621,8 +621,8 @@ tBlockCheckCanGoLeft:
         # condition 1
         movq a1X, %rdi              
         decq %rdi
-        cmpq xSize, %rdi
-        jge tBlockCheckCanGoLeftReturnFalse
+        cmpq $0, %rdi
+        jl tBlockCheckCanGoLeftReturnFalse
 
         # condition 2 - 
         movq a1X, %rdi
