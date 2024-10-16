@@ -258,7 +258,17 @@ takeAction:
         call checkCanGoRight            # returns if moving right is possible
 
         cmpq TRUE, %rax                 # if moving right is possible:
-        call goRight                    # then move the tetrino right
+        jne exitTakeAction
+        // call goRight                    # then move the tetrino right
+
+        movq currentBlockType, %rdi
+        call clearTetrino
+
+        movq currentBlockType, %rdi
+        call goRight                       # then move the tetrino left
+
+        movq currentBlockType, %rdi
+        call setTetrino
 
         jmp exitTakeAction              # action performed, exit subroutine
 
@@ -272,7 +282,16 @@ takeAction:
         call checkCanGoLeft             # returns if moving left is possible
         
         cmpq TRUE, %rax                 # if moving left is possible:
-        call goLeft                     # then move the tetrino left
+        jne exitTakeAction                     # then move the tetrino left
+
+        movq currentBlockType, %rdi
+        call clearTetrino
+
+        movq currentBlockType, %rdi
+        call goLeft                       # then move the tetrino left
+
+        movq currentBlockType, %rdi
+        call setTetrino
 
         jmp exitTakeAction              # action performed, exit subroutine
 
@@ -286,7 +305,16 @@ takeAction:
         call checkCanRotate             # returns if rotating the tetrino is possible
 
         cmpq TRUE, %rax                 # if rotating the tetrino is possible:
-        call rotate                     # then rotate the tetrino
+        jne exitTakeAction                     # then rotate the tetrino
+
+        movq currentBlockType, %rdi
+        call clearTetrino
+
+        movq currentBlockType, %rdi
+        call rotate                       # then move the tetrino left
+
+        movq currentBlockType, %rdi
+        call setTetrino
 
         jmp exitTakeAction              # action performed, exit subroutine
 
