@@ -5,15 +5,15 @@
     currentBlockType: .quad 1           # the type of block that is currently falling, e.g. 1  == tBlock
     currentState: .quad 1               # rotation state of the current tetrino
 
-    a1X: .byte 4
-    a1Y: .byte 19
+    a1X: .quad 4
+    a1Y: .quad 19
     
-    a2X: .byte 5
-    a2Y: .byte 19
+    a2X: .quad 5
+    a2Y: .quad 19
     
-    a3X: .byte 4
-    a3Y: .byte 19
+    a3X: .quad 4
+    a3Y: .quad 19
     
-    a4X: .byte 5
-    a4Y: .byte 18
+    a4X: .quad 5
+    a4Y: .quad 18
     
