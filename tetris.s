@@ -132,9 +132,9 @@ mainGameLoop:
     passMusicStruct                     # pass music struct
     call UpdateMusicStream              # play the next part of the music
 
-    call tryFall
-
     call takeAction
+
+    call tryFall
         
     call BeginDrawing                   # Setup raylib canvas to start drawing
         movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color

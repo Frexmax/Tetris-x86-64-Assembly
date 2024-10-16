@@ -39,7 +39,7 @@ Set rotation state to 1
 */
 tBlockSpawnBlock:
     movq $1, currentState
-
+    
     # point a1
     movq $4, a1X                        
     movq $19, a1Y                        
@@ -316,7 +316,7 @@ tBlockCheckCanRotate:
     tBlockCheckCanRotateState4:
         # condition 1 - check if coordinate within the grid 
         movq a4X, %rdi              
-        incq a4X
+        incq %rdi
         cmpq xSize, %rdi
         jge tBlockCheckCanRotateReturnFalse
 
