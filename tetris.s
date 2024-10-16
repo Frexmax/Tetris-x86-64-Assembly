@@ -4,6 +4,7 @@
 .include "config/config.s"
 .include "grid/grid.s"
 .include "audio/audio.s"
+.include "grid/blocks/block_config.s"
 
 .data
 
@@ -13,10 +14,14 @@
     out: .asciz "x: %d, y: %d\n"
     testStringRight: .asciz "WENT RIGHT\n"
     testStringLeft: .asciz "WENT LEFT\n"
-    testStringUp: .asciz "WENT UP\n"
+    testStringUp: .asciz "ROTATE\n"
 
 	.globl	main
 	.type	main, @function
+
+    .type takeAction @function
+
+    .type generateNextTetrino @function
 
 main:
     prologue                            # set up stack frame
@@ -32,7 +37,7 @@ main:
 
     passMusicStruct                     # pass received music struct as argument
     call PlayMusicStream                # play music
-    
+
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
     
@@ -112,8 +117,8 @@ mainGameLoop:
     cmpq $0, %rax                       # if WindowShouldClose returns true (anything else than 0) then exit program
 	jne quitGame                        # quit game
     
-    passMusicStruct
-    call UpdateMusicStream
+    passMusicStruct                     # pass music struct
+    call UpdateMusicStream              # play the next part of the music
 
     call takeAction
 
@@ -143,46 +148,81 @@ quitGame:
     call exit                           
 
 
+/*
+Randomly generate the type of the next tetrino to be spawned
+@return - the type of the next tetrino (rax)
+*/
+generateNextTetrino:
+    ret
+
+
 /* 
-TO DO
+Checks user keyboard input, if the user pressed:
+    - RIGHT ARROW : check if it's possible to move the tetrino right, if yes, do it, else no changes
+    - LEFT ARROW : check if it's possible to move the tetrino left, if yes, do it, else no changes
+    - UP ARROW : check if it's possible to rotate the tetrino, if yes, do it, else no changes
+    - ELSE : don't make any changes
 */
 takeAction:
+    # save register used in the subroutine
     pushq %rdi
     
-    call GetKeyPressed                  # get currently pressed key in rax, 0 if none 
+    call GetKeyPressed                  # get currently pressed key in rax, 0 if no key pressed
 
-    cmpq KEY_RIGHT, %rax
-    je moveRightCommand
+    cmpq KEY_RIGHT, %rax                # if the current key pressed is the RIGTH ARROW key:
+    je moveRightCommand                 # try to move the tetrino to the right
 
-    cmpq KEY_LEFT, %rax
-    je moveLeftCommand
+    cmpq KEY_LEFT, %rax                 # if the current key pressed is the LEFT ARROW key:
+    je moveLeftCommand                  # try to move the tetrino to the left
 
-    cmpq KEY_UP, %rax
-    je moveUpCommand
+    cmpq KEY_UP, %rax                   # if the current key pressed is the UP ARROW key:
+    je rotateCommand                    # try to rotate the tetrino
 
-    jmp exitTakeAction
+    jmp exitTakeAction                  # if none of the above, then either no key was pressed or an invalid one, exit subroutine
 
     moveRightCommand:
-        movq $testStringRight, %rdi
+        # TESTING ONLY
+        movq $testStringRight, %rdi     
         movq $0, %rax   
         call printf
 
-        jmp exitTakeAction
+        movq currentBlockType, %rdi     # arg 1 of checkCanGoRight - the type of the current block 
+        call checkCanGoRight            # returns if moving right is possible
+
+        cmpq TRUE, %rax                 # if moving right is possible:
+        call goRight                    # then move the tetrino right
+
+        jmp exitTakeAction              # action performed, exit subroutine
 
     moveLeftCommand:
+        # TESTING ONLY
         movq $testStringLeft, %rdi
         movq $0, %rax
         call printf
 
-        jmp exitTakeAction
+        movq currentBlockType, %rdi     # arg 1 of checkCanGoLeft - the type of the current block 
+        call checkCanGoLeft             # returns if moving left is possible
+        
+        cmpq TRUE, %rax                 # if moving left is possible:
+        call goLeft                     # then move the tetrino left
 
-    moveUpCommand:
+        jmp exitTakeAction              # action performed, exit subroutine
+
+    rotateCommand:
+        # TESTING ONLY
         movq $testStringUp, %rdi
         movq $0, %rax
         call printf
 
-        jmp exitTakeAction
+        movq currentBlockType, %rdi     # arg 1 of checkCanRotate - the type of the current block  
+        call checkCanRotate             # returns if rotating the tetrino is possible
+
+        cmpq TRUE, %rax                 # if rotating the tetrino is possible:
+        call rotate                     # then rotate the tetrino
+
+        jmp exitTakeAction              # action performed, exit subroutine
 
     exitTakeAction:
-        popq %rdi
+        # retrieve register used in the subroutine
+        popq %rdi               
         ret

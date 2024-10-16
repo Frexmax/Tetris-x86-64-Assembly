@@ -34,7 +34,7 @@
 
 
 /* 
-Initialize a1 (x and y) to a4 for the T block
+Initialize a1 (x and y) to a4 for the T-block
 Set rotation state to 1
 */
 tBlockSpawnBlock:
@@ -58,7 +58,7 @@ tBlockSpawnBlock:
     ret
 
 /* 
-Returns TRUE if block can fall, depending on the current position and rotation state, else 0
+Returns TRUE if T-block can fall, depending on the current position and rotation state, else 0
 @return - boolean value TRUE (1) or FALSE (0) in (rax)
 */
 tBlockCheckCanFall:
@@ -217,7 +217,7 @@ tBlockCheckCanFall:
         ret
 
 /* 
-Returns TRUE if block can rotate, depending on the current position and rotation state, else 0
+Returns TRUE if T-block can rotate, depending on the current position and rotation state, else 0
 @return - boolean value TRUE (1) or FALSE (0) in (rax)
 */
 tBlockCheckCanRotate:
@@ -357,7 +357,8 @@ tBlockCheckCanRotate:
 
 
 /*
-TO DO
+Returns TRUE if T-block can go right, depending on the current position and rotation state, else 0
+@return - boolean value TRUE (1) or FALSE (0) in (rax)
 */
 tBlockCheckCanGoRight:
     pushq %rdi
@@ -512,7 +513,8 @@ tBlockCheckCanGoRight:
 
 
 /*
-TO DO
+Returns TRUE if T-block can go left, depending on the current position and rotation state, else 0
+@return - boolean value TRUE (1) or FALSE (0) in (rax)
 */
 tBlockCheckCanGoLeft:
     pushq %rdi
@@ -667,7 +669,7 @@ tBlockCheckCanGoLeft:
 
 # Can clear and set in the fall, go right, go left, rotate subroutines
 /*
-TO DO
+Make the T-block fall by 1 line
 */
 tBlockFall:
     decq a1Y
@@ -677,7 +679,7 @@ tBlockFall:
     ret
     
 /*
-TO DO
+Move the T-block to the by 1 column
 */
 tBlockGoLeft:
     decq a1X
@@ -687,7 +689,7 @@ tBlockGoLeft:
     ret
 
 /*
-TO DO
+Move the T-block to the right by 1 column
 */
 tBlockGoRight:
     incq a1X
@@ -697,7 +699,7 @@ tBlockGoRight:
     ret
 
 /*
-TO DO
+Rotate the T-block, meaning move it to the next (one of the 4) rotation states
 */
 tBlockRotate:
     pushq %rdi
@@ -808,7 +810,7 @@ tBlockRotate:
 
 
 /* 
-TO DO
+Clear T-block from the grid, meaning to write 0s to cells with the T-block coordinates
 */
 tBlockClearTetrino:
     pushq %rdi
@@ -839,7 +841,7 @@ tBlockClearTetrino:
     ret
 
 /*
-TO DO 
+Set T-block in the grid, meaning write the colour value of the T-block to cells with the T-block coordinates
 */
 tBlockSetTetrino:
     pushq %rdi

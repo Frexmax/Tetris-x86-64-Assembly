@@ -1,5 +1,5 @@
 .include "grid/blocks/t_block/t_block.s"
-.include "grid/blocks/block_config.s"
+
 
 .data
 
