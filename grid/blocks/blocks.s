@@ -2,6 +2,9 @@
 
 
 .data
+    fallingCounter: .quad 0                   # counter to keep track how many game loops were skipped before the next fall update
+    fallingRatePerSecond: .quad 1             # how many times to update the fall per second
+    framesPerFall: .quad 
 
 .text
 	.globl	spawnBlock
@@ -34,6 +37,11 @@
 	.globl	setTetrino
     .type	setTetrino, @function
 
+.macro setUpFallingInfo
+    movq fallingRatePerSecond, %rdi
+    imulq targetFPS, %rdi
+    movq %rdi, framesPerFall
+.endm
 
 /* 
 Wrapper function for the tetrino spawnBlock subroutine, 

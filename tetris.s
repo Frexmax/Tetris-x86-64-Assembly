@@ -9,6 +9,7 @@
 .data
 
 .text
+    digitOut: .asciz "%d\n"
     keyOut: .asciz "Current Key: %d\n"
     printRegisters: .asciz "RAX: %d, RDI, %d, RSI, %d, RDX: %d\n"
     out: .asciz "x: %d, y: %d\n"
@@ -122,6 +123,8 @@ mainGameLoop:
 
     call takeAction
 
+    call tryFall
+        
     call BeginDrawing                   # Setup raylib canvas to start drawing
         movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
@@ -155,6 +158,33 @@ Randomly generate the type of the next tetrino to be spawned
 generateNextTetrino:
     ret
 
+/*
+TO DO
+NAME TO CHANGE
+*/
+tryFall:
+    # save registers used
+    pushq %rdi
+
+    incq fallingCounter
+    movq framesPerFall, %rdi
+    cmpq %rdi, fallingCounter
+    jge attemptFall 
+
+    jmp exitTryFall
+
+    attemptFall:
+        subq %rdi, fallingCounter        
+        
+        movq currentBlockType, %rdi     # arg 1 of checkCanGoLeft - the type of the current block 
+        call checkCanFall               # returns if moving left is possible
+        
+        cmpq TRUE, %rax                 # if moving left is possible:
+        call fall                       # then move the tetrino left
+    
+    exitTryFall:
+        popq %rdi
+        ret
 
 /* 
 Checks user keyboard input, if the user pressed:
