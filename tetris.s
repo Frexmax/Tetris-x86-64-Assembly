@@ -42,12 +42,19 @@ main:
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
 
+    # setUpFallingInfo
+    movq fallingRatePerSecond, %rdi
+    imulq targetFPS, %rdi
+    movq %rdi, framesPerFall
+
     movq currentBlockType, %rdi
     call spawnBlock
+    call setTetrino
 
-/*
+
 movq $buffer, %r9
-    movb $0, (%r9)
+    movb $1, (%r9)
+    
     movb $23, 1(%r9)
     movb $0, 2(%r9)
     movb $1, 3(%r9)
@@ -57,6 +64,7 @@ movq $buffer, %r9
     movb $1, 7(%r9)
     movb $0, 8(%r9)
     movb $1, 9(%r9)
+
 
     movb $1, 10(%r9)
     movb $0, 11(%r9)
@@ -91,6 +99,9 @@ movq $buffer, %r9
     movb $1, 38(%r9)
     movb $1, 39(%r9)
 
+    movb $1, 66(%r9)
+
+/*
     movb $0, 180(%r9)
     movb $0, 181(%r9)
     movb $0, 182(%r9)
@@ -112,7 +123,7 @@ movq $buffer, %r9
     movb $0, 197(%r9)
     movb $0, 198(%r9)
     movb $0, 199(%r9)
- */
+*/
 
     jmp mainGameLoop                    # go to main game loop 
 
@@ -153,6 +164,14 @@ quitGame:
     movq $0, %rdi                       # error code 0, all successful
     call exit                           
 
+/* 
+@param - rdi - type of block
+*/
+checkGameOver:
+    call generateNextTetrino
+    movq currentBlockType, %rdi
+    call spawnBlock
+    ret
 
 /*
 Randomly generate the type of the next tetrino to be spawned
@@ -184,15 +203,22 @@ tryFall:
         
         cmpq TRUE, %rax                 # if moving left is possible:
         je executeFall
-        jmp checkGameOver
+        jmp fallNotPossible
         
         executeFall:
+            movq currentBlockType, %rdi
+            call clearTetrino
+
+            movq currentBlockType, %rdi
             call fall                       # then move the tetrino left
+
+            movq currentBlockType, %rdi
+            call setTetrino
+
             jmp exitTryFall
 
-        checkGameOver:
-            movq currentBlockType, %rdi
-            call spawnBlock
+        fallNotPossible:
+            call checkGameOver
             jmp exitTryFall
 
         jmp exitTryFall

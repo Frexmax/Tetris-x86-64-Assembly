@@ -1,7 +1,7 @@
 .include "grid/blocks/blocks.s"
 
 .data
-    buffer: .space 200                  # create buffer to store the grid values
+    buffer: .space 200, 0                  # create buffer to store the grid values
                                          
 .text
 	.globl	drawGrid
