@@ -137,6 +137,8 @@ mainGameLoop:
     call tryFall
         
     call BeginDrawing                   # Setup raylib canvas to start drawing
+        
+        # could change this and draw background in the drawGrid section ???
         movq BACKGROUND, %rdi           # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
         
@@ -177,13 +179,12 @@ checkGameOver:
     jmp exitCheckGameOver
 
     gameOver:
-        movq $digitOut, %rdi
-        movq $2, %rsi
-        movq $0, %rax
-        call printf
-
         call clearGrid
-        # jmp checkGameOver
+        
+        // DO SOMETHING AFTER GAME OVER ...
+        // popq %rdi
+        // popq %rsi
+        // jmp checkGameOver
 
     exitCheckGameOver:
         popq %rdi
@@ -319,7 +320,6 @@ takeAction:
 
     rotateCommand:
         movq $1, fallRateMultiplier    # if the user pressed another key, reset fallRateMultiplier to default
-
 
         movq currentBlockType, %rdi     # arg 1 of checkCanRotate - the type of the current block  
         call checkCanRotate             # returns if rotating the tetrino is possible

@@ -87,6 +87,7 @@ drawGrid:
         je nextLoopIteration
 
         draw:
+            /*
             # TEST DRAW BLOCK
             movzbq %al, %rdi            # arg 1 - indexX in our coordinate system where the block should be drawn
             movb %ah, %al
@@ -94,6 +95,15 @@ drawGrid:
             movq BLACK, %rdx            # arg 3 - 32-bits RGBA - color of the block
             call drawCell   
             jmp nextLoopIteration               
+            */
+
+            movzbq %al, %rdi            # arg 1 - indexX in our coordinate system where the block should be drawn
+            movb %ah, %al
+            movzbq %al, %rsi            # arg 2 - indexY in our coordinate system where the block should be drawn
+            call getColorFromType
+            movq %rax, %rdx
+            call drawCell   
+            jmp nextLoopIteration   
 
         nextLoopIteration:
             incq %r9                    # go to next #cell by incrementing by 1

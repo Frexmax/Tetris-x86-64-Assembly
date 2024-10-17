@@ -24,7 +24,7 @@
     ZBLOCKCOLOR: .quad 0xff0000ff
 
     // BACKGROUND: .quad 0xffffffff
-    BACKGROUND: .quad 0xff303030
+    BACKGROUND: .quad 0xff505050
 
 .macro setColorText # color to be decided
     subq $16, %rsp

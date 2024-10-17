@@ -2,6 +2,9 @@
 
 
 .data
+    currentBlockType: .quad 1           # the type of block that is currently falling, e.g. 1  == tBlock
+    currentState: .quad 1               # rotation state of the current tetrino
+    
     fallingCounter: .quad 0                   # counter to keep track how many game loops were skipped before the next fall update
     fallingRatePerSecond: .quad 1             # how many times to update the fall per second
     framesPerFall: .quad 0
@@ -38,6 +41,9 @@
 	.globl	setTetrino
     .type	setTetrino, @function
 
+    .globl getColorFromType
+    .type getColorFromType, @function
+
 .macro setUpFallingInfo
     movq fallingRatePerSecond, %rdi
     imulq targetFPS, %rdi
@@ -49,6 +55,64 @@
     movq $1, fallRateMultiplier
 .endm
 
+
+/* 
+@return - rax - the color value for this block type
+*/
+getColorFromType:
+    pushq %rdi
+
+    movq currentBlockType, %rdi
+
+    cmpq tBlockType, %rdi
+    je setColorTBlock
+    
+    cmpq iBlockType, %rdi
+    je setColorIBlock
+
+    cmpq jBlockType, %rdi
+    je setColorJBlock
+
+    cmpq lBlockType, %rdi
+    je setColorIBlock
+
+    cmpq sBlockType, %rdi
+    je setColorIBlock
+
+    cmpq zBlockType, %rdi
+    je setColorIBlock
+
+    setColorTBlock:
+        movq TBLOCKCOLOR, %rax
+        jmp exitGetColorFromType
+
+    setColorIBlock:
+        movq IBLOCKCOLOR, %rax
+        jmp exitGetColorFromType
+
+    setColorJBlock:
+        movq JBLOCKCOLOR, %rax
+        jmp exitGetColorFromType
+
+    setColorLBlock:
+        movq LBLOCKCOLOR, %rax
+        jmp exitGetColorFromType
+
+    setColorOBlock:
+        movq OBLOCKCOLOR, %rax
+        jmp exitGetColorFromType
+
+    setColorSBlock:
+        movq SBLOCKCOLOR, %rax
+        jmp exitGetColorFromType
+
+    setColorZBlock:
+        movq ZBLOCKCOLOR, %rax
+        jmp exitGetColorFromType
+
+    exitGetColorFromType:
+        popq %rdi
+        ret
 
 /* 
 Wrapper function for the tetrino spawnBlock subroutine, 

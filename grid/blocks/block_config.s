@@ -7,10 +7,7 @@
     oBlockType: .quad 5
     sBlockType: .quad 6
     zBlockType: .quad 7
-    
-    currentBlockType: .quad 1           # the type of block that is currently falling, e.g. 1  == tBlock
-    currentState: .quad 1               # rotation state of the current tetrino
-    
+        
     a1X: .quad 4
     a1Y: .quad 19
     
