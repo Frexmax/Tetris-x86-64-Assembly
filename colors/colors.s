@@ -12,11 +12,19 @@
     */
 
 .data
-    BLACK: .long 0xff000000 
-    WHITE: .long 0xffffffff
-    BLUE: .long 0xffff0000
-    BACKGROUND: .long 0xffffffff
+    BLACK: .quad 0xff000000 
+    WHITE: .quad 0xffffffff
+    
+    IBLOCKCOLOR: .quad 0xffffff00
+    JBLOCKCOLOR: .quad 0xffff0000
+    LBLOCKCOLOR: .quad 0xff007fff
+    OBLOCKCOLOR: .quad 0xff00ffff
+    TBLOCKCOLOR: .quad 0xff800080
+    SBLOCKCOLOR: .quad 0xff00ff00
+    ZBLOCKCOLOR: .quad 0xff0000ff
 
+    // BACKGROUND: .quad 0xffffffff
+    BACKGROUND: .quad 0xff303030
 
 .macro setColorText # color to be decided
     subq $16, %rsp

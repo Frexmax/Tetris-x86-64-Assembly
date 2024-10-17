@@ -5,6 +5,7 @@
     fallingCounter: .quad 0                   # counter to keep track how many game loops were skipped before the next fall update
     fallingRatePerSecond: .quad 1             # how many times to update the fall per second
     framesPerFall: .quad 0
+    fallRateMultiplier: .quad 1
 
 .text
 	.globl	spawnBlock
@@ -43,12 +44,21 @@
     movq %rdi, framesPerFall
 .endm
 
+.macro resetFallingInfo
+    movq $0, fallingCounter
+    movq $1, fallRateMultiplier
+.endm
+
+
 /* 
 Wrapper function for the tetrino spawnBlock subroutine, 
 depending on the type, the subroutine for the specific tetrino will be called
 @param - rdi - tetrino type
+@return - rax - TRUE (1) spawn possible, FALSE (0) spawn impossible - game over
 */
 spawnBlock:
+    resetFallingInfo
+
     cmpq tBlockType, %rdi               # check if the current block is a T-block
     je tBlockSpawnBlock                 # if it is then call the spawnBlock subro
 

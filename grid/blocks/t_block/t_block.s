@@ -36,6 +36,7 @@
 /* 
 Initialize a1 (x and y) to a4 for the T-block
 Set rotation state to 1
+@return - rax - TRUE (1) spawn possible, FALSE (0) spawn impossible - game over
 */
 tBlockSpawnBlock:
     movq $1, currentState
@@ -55,6 +56,8 @@ tBlockSpawnBlock:
     # point 4
     movq $5, a4X
     movq $18, a4Y
+                                        
+    call checkCanFall                   # check if fall possible, if not, game over
     ret
 
 /* 

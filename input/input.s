@@ -18,19 +18,6 @@ getCurrentCommand:
     cmpq KEY_LEFT, %rax
     je leftArrowReturn
 
-    /*
-    movq $257, %rdi                # check if the right arrow is pressed 
-    call IsKeyDown                                
-
-    cmpq FALSE, %rax                    # if function returns TRUE (not 0), return the value of KEY_RIGHT, else continue and check left arrow key
-    jne rightArrowReturn                
-
-    movq KEY_LEFT, %rdi                 # check if the left arrow is pressed
-    call IsKeyDown                       
-    cmpq FALSE, %rax                    # if function returns TRUE (not 0), return the value of KEY_LEFT 
-    jne leftArrowReturn
-    */
-
     jmp noKeyOrNotValid                 # if neither KEY_RIGHT or KEY_LEFT key pressed, then return 0 in rax
 
     rightArrowReturn:

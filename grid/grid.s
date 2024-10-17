@@ -26,6 +26,21 @@
     .type	drawCell, @function
 
 
+/* 
+Write to buffer based on the cell number
+@param - #cell - rdi - cell number 
+@param -value - rsi - the value to write in the cell
+*/
+writeToBufferFromCell:
+    pushq %rcx
+
+    movq $buffer, %rcx
+    addq %rdi, %rcx
+    movb %sil, (%rcx)
+    
+    popq %rcx
+    ret
+
 /*
 Write to buffer based on indexX and indexY
 @param - indexX - rdi - x index of our container (not referring to raylib window positions)
@@ -36,7 +51,7 @@ writeToBufferFromXY:
     pushq %rcx
     pushq %rax
     
-    call xyToCell  #cellno in %rax
+    call xyToCell  # cellno in %rax
     movq $buffer, %rcx
     addq %rax, %rcx
     movb %dl, (%rcx)
@@ -312,3 +327,26 @@ drawCell:
     popq %rdi
     ret
 
+/*
+*/
+clearGrid:
+    # save registers used in subroutine
+    pushq %rdi
+    pushq %r10
+
+    movq $0, %r10                      # initialize loop counter, starting from y = 0
+    loopClearGrid:
+        cmpq cellNumber, %r10
+        jge exitClearGrid
+
+        movq %r10, %rdi
+        movq $0, %rsi
+        call writeToBufferFromCell
+
+        incq %r10
+        jmp loopClearGrid
+
+exitClearGrid:
+    popq %r10
+    popq %rdi
+    ret

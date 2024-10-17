@@ -49,6 +49,7 @@ main:
     call setTetrino
 
 
+/*
 movq $buffer, %r9
     movb $1, (%r9)
     
@@ -98,7 +99,6 @@ movq $buffer, %r9
 
     movb $1, 66(%r9)
 
-/*
     movb $0, 180(%r9)
     movb $0, 181(%r9)
     movb $0, 182(%r9)
@@ -137,7 +137,7 @@ mainGameLoop:
     call tryFall
         
     call BeginDrawing                   # Setup raylib canvas to start drawing
-        movq WHITE, %rdi                # arg 1 - 32-bits RGBA - color
+        movq BACKGROUND, %rdi           # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
         
         // movq $1, %rdi
@@ -165,10 +165,30 @@ quitGame:
 @param - rdi - type of block
 */
 checkGameOver:
+    pushq %rdi
+    pushq %rdi
+
     call generateNextTetrino
     movq currentBlockType, %rdi
     call spawnBlock
-    ret
+    
+    cmpq FALSE, %rax
+    je gameOver
+    jmp exitCheckGameOver
+
+    gameOver:
+        movq $digitOut, %rdi
+        movq $2, %rsi
+        movq $0, %rax
+        call printf
+
+        call clearGrid
+        # jmp checkGameOver
+
+    exitCheckGameOver:
+        popq %rdi
+        popq %rdi
+        ret
 
 /*
 Randomly generate the type of the next tetrino to be spawned
@@ -184,17 +204,22 @@ NAME TO CHANGE
 tryFall:
     # save registers used
     pushq %rdi
+    pushq %rsi
 
     incq fallingCounter
     movq framesPerFall, %rdi
-    cmpq %rdi, fallingCounter
+    movq fallingCounter, %rsi
+    imulq fallRateMultiplier, %rsi
+
+    cmpq %rdi, %rsi
     jge attemptFall 
 
     jmp exitTryFall
 
     attemptFall:
-        subq %rdi, fallingCounter        
-        
+        # subq %rdi, fallingCounter        
+        movq $0, fallingCounter
+
         movq currentBlockType, %rdi     # arg 1 of checkCanGoLeft - the type of the current block 
         call checkCanFall               # returns if moving left is possible
         
@@ -221,6 +246,7 @@ tryFall:
         jmp exitTryFall
 
     exitTryFall:
+        popq %rsi
         popq %rdi
         ret
 
@@ -237,7 +263,10 @@ takeAction:
     
     call GetKeyPressed                  # get currently pressed key in rax, 0 if no key pressed
 
-    cmpq KEY_RIGHT, %rax                # if the current key pressed is the RIGTH ARROW key:
+    cmpq KEY_DOWN, %rax                 # if the current key pressed is the DOWN ARROW key:
+    je accelerateFallCommand            # increase the fallRateMultiplier
+
+    cmpq KEY_RIGHT, %rax                # if the current key pressed is the RIGHT ARROW key:
     je moveRightCommand                 # try to move the tetrino to the right
 
     cmpq KEY_LEFT, %rax                 # if the current key pressed is the LEFT ARROW key:
@@ -249,17 +278,13 @@ takeAction:
     jmp exitTakeAction                  # if none of the above, then either no key was pressed or an invalid one, exit subroutine
 
     moveRightCommand:
-        # TESTING ONLY
-        movq $testStringRight, %rdi     
-        movq $0, %rax   
-        call printf
-
+        movq $1, fallRateMultiplier    # if the user pressed another key, reset fallRateMultiplier to default
+        
         movq currentBlockType, %rdi     # arg 1 of checkCanGoRight - the type of the current block 
         call checkCanGoRight            # returns if moving right is possible
 
         cmpq TRUE, %rax                 # if moving right is possible:
         jne exitTakeAction
-        // call goRight                    # then move the tetrino right
 
         movq currentBlockType, %rdi
         call clearTetrino
@@ -273,10 +298,7 @@ takeAction:
         jmp exitTakeAction              # action performed, exit subroutine
 
     moveLeftCommand:
-        # TESTING ONLY
-        movq $testStringLeft, %rdi
-        movq $0, %rax
-        call printf
+        movq $1, fallRateMultiplier    # if the user pressed another key, reset fallRateMultiplier to default
 
         movq currentBlockType, %rdi     # arg 1 of checkCanGoLeft - the type of the current block 
         call checkCanGoLeft             # returns if moving left is possible
@@ -296,10 +318,8 @@ takeAction:
         jmp exitTakeAction              # action performed, exit subroutine
 
     rotateCommand:
-        # TESTING ONLY
-        movq $testStringUp, %rdi
-        movq $0, %rax
-        call printf
+        movq $1, fallRateMultiplier    # if the user pressed another key, reset fallRateMultiplier to default
+
 
         movq currentBlockType, %rdi     # arg 1 of checkCanRotate - the type of the current block  
         call checkCanRotate             # returns if rotating the tetrino is possible
@@ -317,6 +337,11 @@ takeAction:
         call setTetrino
 
         jmp exitTakeAction              # action performed, exit subroutine
+
+    accelerateFallCommand:
+        # movq $4, fallRateMultiplier
+        addq $2, fallRateMultiplier
+        jmp exitTakeAction
 
     exitTakeAction:
         # retrieve register used in the subroutine
