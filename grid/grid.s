@@ -80,13 +80,13 @@ drawGrid:
                                         
         movq %r9, %rdi                  # arg 1 - int - #cell 
         call cellToXY                   # get indexX (al) and indexY (ah) based on the #cell
-
+    
         movq $buffer, %r11
         movzbq (%r11, %r9, 1), %r10     # get value of grid at #cell %r9 from the buffer
         cmpq $0, %r10                   # if the value in the buffer == 0, then no block present
-        je nextLoopIteration
+        je drawBackground
 
-        draw:
+        drawColor:
             /*
             # TEST DRAW BLOCK
             movzbq %al, %rdi            # arg 1 - indexX in our coordinate system where the block should be drawn
@@ -100,8 +100,18 @@ drawGrid:
             movzbq %al, %rdi            # arg 1 - indexX in our coordinate system where the block should be drawn
             movb %ah, %al
             movzbq %al, %rsi            # arg 2 - indexY in our coordinate system where the block should be drawn
+
             call getColorFromType
             movq %rax, %rdx
+            call drawCell   
+            jmp nextLoopIteration   
+
+        drawBackground:
+            movzbq %al, %rdi            # arg 1 - indexX in our coordinate system where the block should be drawn
+            movb %ah, %al
+            movzbq %al, %rsi            # arg 2 - indexY in our coordinate system where the block should be drawn
+          
+            movq BACKGROUND, %rdx
             call drawCell   
             jmp nextLoopIteration   
 

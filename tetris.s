@@ -9,7 +9,7 @@
 .data
 
 .text
-    digitOut: .asciz "%d\n"
+    digitOut: .asciz "%ld\n"
     keyOut: .asciz "Current Key: %d\n"
     printRegisters: .asciz "RAX: %d, RDI, %d, RSI, %d, RDX: %d\n"
     out: .asciz "x: %d, y: %d\n"
@@ -137,11 +137,6 @@ mainGameLoop:
     call tryFall
         
     call BeginDrawing                   # Setup raylib canvas to start drawing
-        
-        # could change this and draw background in the drawGrid section ???
-        movq BACKGROUND, %rdi           # arg 1 - 32-bits RGBA - color
-        call ClearBackground            # clear background with color in struct on stack
-        
         // movq $1, %rdi
         // movq $0, %rsi
         // movq $0, %rdx
@@ -169,7 +164,7 @@ quitGame:
 checkGameOver:
     pushq %rdi
     pushq %rdi
-
+    
     call generateNextTetrino
     movq currentBlockType, %rdi
     call spawnBlock
@@ -196,8 +191,31 @@ Randomly generate the type of the next tetrino to be spawned
 @return - the type of the next tetrino (rax)
 */
 generateNextTetrino:
-    ret
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
 
+    leaq randomNumberBuffer, %rdi
+    movq randomNumberBufferSize, %rsi
+    movq $318, %rax                     # set syscall to getrandom   
+    syscall         
+
+    
+    movq randomNumberBuffer, %rax
+    movq blockCount, %rdi
+    movq $0, %rdx
+    divq %rdi
+    incq %rdx                           # add 1, as block type indexing begins at 1 
+    movq %rdx, currentBlockType         # store the result as the current block type
+
+    # TEMP, AS NO OTHER BLOCKS IMPLEMENTED
+    movq $1, currentBlockType
+
+    popq %rdx
+    popq %rsi
+    popq %rdi
+    ret                     
+                                        
 /*
 TO DO
 NAME TO CHANGE

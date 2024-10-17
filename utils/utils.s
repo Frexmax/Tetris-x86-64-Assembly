@@ -42,6 +42,21 @@
 
 .endm
 
+
+/*
+Compute the absolute value of a number
+@param - number to get the absolute value - rdi
+@return - absolute value of the input (rax)
+*/
+getAbsoluteValue:
+    cmpq $0, %rdi
+    jge exitGetAbsoluteValue
+    negq %rdi
+    
+    exitGetAbsoluteValue:
+        movq %rdi, %rax
+        ret
+
 /*
 indexX and indexY from our coordinate system are converted to the #cell in our buffer according to the formula:
     - y * xMax + x

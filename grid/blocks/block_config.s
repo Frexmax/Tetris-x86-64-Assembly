@@ -1,4 +1,6 @@
 .data
+    blockCount: .quad 7
+
     # define type values for different tetrinos
     tBlockType: .quad 1        
     iBlockType: .quad 2
