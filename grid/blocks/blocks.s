@@ -2,6 +2,7 @@
 .include "grid/blocks/o_block/o_block.s"
 .include "grid/blocks/i_block/i_block.s"
 .include "grid/blocks/s_block/s_block.s"
+.include "grid/blocks/z_block/z_block.s"
 
 
 .data
@@ -82,7 +83,7 @@ getColorFromType:
     je setColorSBlock
 
     cmpq zBlockType, %rdi
-    je setColorIBlock
+    je setColorZBlock
 
     cmpq oBlockType, %rdi
     je setColorOBlock
@@ -139,6 +140,9 @@ spawnBlock:
     cmpq sBlockType, %rdi
     je sBlockSpawnBlock
 
+    cmpq zBlockType, %rdi
+    je zBlockSpawnBlock
+
     jmp exitSpawnBlock
 
     exitSpawnBlock:
@@ -162,6 +166,9 @@ checkCanFall:
 
     cmpq sBlockType, %rdi
     je sBlockCheckCanFall
+
+    cmpq zBlockType, %rdi
+    je zBlockCheckCanFall
 
     jmp exitCheckCanFall
 
@@ -187,6 +194,9 @@ checkCanRotate:
     cmpq sBlockType, %rdi
     je sBlockCheckCanRotate
 
+    cmpq zBlockType, %rdi
+    je zBlockCheckCanRotate
+
     jmp exitCheckCanRotate
 
     exitCheckCanRotate:
@@ -211,6 +221,9 @@ checkCanGoRight:
     cmpq sBlockType, %rdi
     je sBlockCheckCanGoRight
 
+    cmpq zBlockType, %rdi
+    je zBlockCheckCanGoRight
+
     jmp exitCheckCanGoRight
 
     exitCheckCanGoRight:
@@ -234,6 +247,9 @@ checkCanGoLeft:
 
     cmpq sBlockType, %rdi
     je sBlockCheckCanGoLeft
+
+    cmpq zBlockType, %rdi
+    je zBlockCheckCanGoLeft
 
     jmp exitCheckCanGoLeft
     
@@ -269,6 +285,9 @@ rotate:
 
     cmpq sBlockType, %rdi
     je sBlockRotate
+
+    cmpq zBlockType, %rdi
+    je zBlockRotate
 
     jmp exitRotate
 
