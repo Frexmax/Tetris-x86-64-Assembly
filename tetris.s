@@ -141,13 +141,6 @@ mainGameLoop:
     # call checkGrid                    # BUGGY
 
     call BeginDrawing                   # Setup raylib canvas to start drawing
-        // movq $1, %rdi
-        // movq $0, %rsi
-        // movq $0, %rdx
-        // call writeToBufferFromXY
-
-        // movq $0, %rdi
-        // call gridShift
 
         call drawGrid
 
