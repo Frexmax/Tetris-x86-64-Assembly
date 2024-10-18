@@ -1,4 +1,4 @@
-# BUG: WITH NEW BLOCK: COLOR CHANGES FOR EVERYTHING
+# ADD BORDER TO GRID???
 
 .include "input/input.s"
 .include "utils/utils.s"

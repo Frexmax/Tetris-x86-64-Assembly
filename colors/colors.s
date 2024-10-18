@@ -11,7 +11,7 @@
             2. 255 - fully visible
     */
 
-.data
+.data   
     BLACK: .quad 0xff000000 
     WHITE: .quad 0xffffffff
     
@@ -24,7 +24,10 @@
     ZBLOCKCOLOR: .quad 0xff0000ff
 
     // BACKGROUND: .quad 0xffffffff
-    BACKGROUND: .quad 0xff505050
+    // BACKGROUND: .quad 0xff505050
+    BACKGROUND: .quad 0xff7a1529
+
+
 
 .macro setColorText # color to be decided
     subq $16, %rsp
