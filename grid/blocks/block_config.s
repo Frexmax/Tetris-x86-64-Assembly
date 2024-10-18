@@ -1,5 +1,5 @@
 .data
-    blockCount: .quad 5
+    blockCount: .quad 7
 
     # define type values for different tetrinos
     tBlockType: .quad 1        
@@ -7,10 +7,8 @@
     oBlockType: .quad 3
     sBlockType: .quad 4
     zBlockType: .quad 5
-    
-    jBlockType: .quad 100
-    lBlockType: .quad 100    
-    # zBlockType: .quad 100
+    lBlockType: .quad 6    
+    jBlockType: .quad 7
         
     a1X: .quad 4
     a1Y: .quad 19

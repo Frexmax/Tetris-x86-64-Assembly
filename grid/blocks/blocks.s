@@ -3,6 +3,8 @@
 .include "grid/blocks/i_block/i_block.s"
 .include "grid/blocks/s_block/s_block.s"
 .include "grid/blocks/z_block/z_block.s"
+.include "grid/blocks/l_block/l_block.s"
+.include "grid/blocks/j_block/j_block.s"
 
 
 .data
@@ -143,6 +145,12 @@ spawnBlock:
     cmpq zBlockType, %rdi
     je zBlockSpawnBlock
 
+    cmpq lBlockType, %rdi
+    je lBlockSpawnBlock
+
+    cmpq jBlockType, %rdi
+    je jBlockSpawnBlock
+
     jmp exitSpawnBlock
 
     exitSpawnBlock:
@@ -169,6 +177,12 @@ checkCanFall:
 
     cmpq zBlockType, %rdi
     je zBlockCheckCanFall
+
+    cmpq lBlockType, %rdi
+    je lBlockCheckCanFall
+
+    cmpq jBlockType, %rdi
+    je jBlockCheckCanFall
 
     jmp exitCheckCanFall
 
@@ -197,6 +211,12 @@ checkCanRotate:
     cmpq zBlockType, %rdi
     je zBlockCheckCanRotate
 
+    cmpq lBlockType, %rdi
+    je lBlockCheckCanRotate
+
+    cmpq jBlockType, %rdi
+    je jBlockCheckCanRotate
+
     jmp exitCheckCanRotate
 
     exitCheckCanRotate:
@@ -223,6 +243,12 @@ checkCanGoRight:
 
     cmpq zBlockType, %rdi
     je zBlockCheckCanGoRight
+
+    cmpq lBlockType, %rdi
+    je lBlockCheckCanGoRight
+
+    cmpq jBlockType, %rdi
+    je jBlockCheckCanGoRight
 
     jmp exitCheckCanGoRight
 
@@ -251,22 +277,16 @@ checkCanGoLeft:
     cmpq zBlockType, %rdi
     je zBlockCheckCanGoLeft
 
+    cmpq lBlockType, %rdi
+    je lBlockCheckCanGoLeft
+
+    cmpq jBlockType, %rdi
+    je jBlockCheckCanGoLeft
+
     jmp exitCheckCanGoLeft
     
     exitCheckCanGoLeft:
         ret
-
-/* 
-Move tetrino down
-depending on the type, the subroutine for the specific tetrino will be called
-@param - rdi - tetrino type
-*/
-fall:
-    decq a1Y
-    decq a2Y
-    decq a3Y
-    decq a4Y
-    ret
 
 /* 
 Wrapper function for the tetrino rotate subroutine, 
@@ -289,10 +309,28 @@ rotate:
     cmpq zBlockType, %rdi
     je zBlockRotate
 
+    cmpq lBlockType, %rdi
+    je lBlockRotate
+
+    cmpq jBlockType, %rdi
+    je jBlockRotate
+
     jmp exitRotate
 
     exitRotate:
         ret
+
+/* 
+Move tetrino down
+depending on the type, the subroutine for the specific tetrino will be called
+@param - rdi - tetrino type
+*/
+fall:
+    decq a1Y
+    decq a2Y
+    decq a3Y
+    decq a4Y
+    ret
 
 /* 
 Move tetrino right
