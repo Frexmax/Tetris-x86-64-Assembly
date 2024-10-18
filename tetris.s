@@ -135,7 +135,9 @@ mainGameLoop:
     call takeAction
 
     call tryFall
-        
+
+    call checkGrid
+
     call BeginDrawing                   # Setup raylib canvas to start drawing
         // movq $1, %rdi
         // movq $0, %rsi

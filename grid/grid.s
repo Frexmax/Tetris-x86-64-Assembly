@@ -270,11 +270,46 @@ gridShift:
         popq %rdi                     # restore y index
         ret
 
+/* 
+*/
+checkGrid:
+    pushq %rdi
+    pushq %r10
+    
+    movq ySize, %r10
+    decq %r10
+
+    loopCheckGrid:
+        cmpq $0, %r10
+        jl exitCheckGrid
+
+        movq %r10, %rdi                # arg 1 of checkLine - indexY, which is equal to the current iteration of the loop
+        call checkLine                 # check if the current line is full
+        cmpq TRUE, %rax
+        je shiftGridFromLine
+
+        jmp nextCheckGridLoopIteration
+
+    shiftGridFromLine:
+        movq %r10, %rdi
+        call gridShift
+        jmp loopCheckGrid
+
+    nextCheckGridLoopIteration:
+        decq %r10
+        jmp loopCheckGrid
+
+    exitCheckGrid:
+        popq %r10
+        popq %rdi
+        ret
+
 /*
 Check if the grid has at least a full line, if it does then return 1 in rax, else return 0
-@return - boolean value TRUE (1) or FALSE (0) in (rax)
+@return - boolean value TRUE (1) or FALSE (0) in (rax) <--- NOTE: maybe return index of the line (y index)
 */
 
+/*
 checkGrid:
     # save registers used in subroutine
     pushq %rdi
@@ -306,6 +341,7 @@ checkGrid:
         popq %r10
         popq %rdi
         ret
+*/
 
 /*
 Draw block cellSize x cellSize at position indexX, indexY in our coordinate system in the raylib window.
