@@ -25,7 +25,7 @@
 
     // BACKGROUND: .quad 0xffffffff
     // BACKGROUND: .quad 0xff505050
-    BACKGROUND: .quad 0xff7a1529
+    BACKGROUND: .quad 0xff2e2e2e
 
     
 

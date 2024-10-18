@@ -28,6 +28,8 @@
 
 main:
     prologue                            # set up stack frame
+
+    #call readBestScore                  # read best score from file
     
     initializeScreenSize                # initialize screen width and height based on cell size and grid size
     movq screenWidth, %rdi              # arg 1 - int - screen width
@@ -149,6 +151,9 @@ mainGameLoop:
 quitGame:
     call CloseWindow                    # close window
     call CloseAudioDevice
+
+    # call checkAndUpdateScore            # write the best score to file
+
     epilogue	                        # close stack frame
     movq $0, %rdi                       # error code 0, all successful
     call exit                           
@@ -265,6 +270,17 @@ Checks user keyboard input, if the user pressed:
 takeAction:
     # save register used in the subroutine
     pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %r8
+    pushq %r9
+
+    #movq $windowTitle, %rdi            # pass text to DrawText
+    #movq 0, %rsi                        # X position
+    #movq 0, %rdx                        # Y position
+    #movq $16, %r8                  # font size
+    #movq $0xFFFFFFFF, %r9               # text color (white)
+    #call DrawText                       # draw the text on the screen
     
     call GetKeyPressed                  # get currently pressed key in rax, 0 if no key pressed
 
@@ -335,5 +351,9 @@ takeAction:
 
     exitTakeAction:
         # retrieve register used in the subroutine
-        popq %rdi               
+        popq %r9
+        popq %r8
+        popq %rdx
+        popq %rsi
+        popq %rdi             
         ret
