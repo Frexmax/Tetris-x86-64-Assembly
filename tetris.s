@@ -190,26 +190,17 @@ generateNextTetrino:
     pushq %rsi
     pushq %rdx
 
-    leaq randomNumberBuffer, %rdi
-    movq randomNumberBufferSize, %rsi
-    movq $318, %rax                     # set syscall to getrandom   
-    syscall         
+    # Call GetRandomValue(min, max) with min = 1, max = 7
+    movq $1, %rdi                # min argument
+    movq blockCount, %rsi        # max argument (7)
+    call GetRandomValue          # call the raylib function
 
-    movq randomNumberBuffer, %rax
-    movq blockCount, %rdi
-    movq $0, %rdx
-    divq %rdi
-    incq %rdx                           # add 1, as block type indexing begins at 1 
-    movq %rdx, currentBlockType         # store the result as the current block type
-
-    # TEMP, AS NO OTHER BLOCKS IMPLEMENTED
-    # movq $1, currentBlockType
+    movq %rax, currentBlockType  # store the result as the current block type
 
     popq %rdx
     popq %rsi
     popq %rdi
-    ret                     
-                                        
+    ret                         
 /*
 TO DO
 NAME TO CHANGE
