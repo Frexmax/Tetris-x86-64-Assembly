@@ -163,7 +163,7 @@ iBlockCheckCanRotate:
         # condition 2
         movq a3Y, %rdi              
         addq $2, %rdi
-        cmpq $ySize, %rdi
+        cmpq ySize, %rdi
         jge iBlockCheckCanRotateReturnFalse
 
         # condition 3 - 
@@ -202,7 +202,7 @@ iBlockCheckCanRotate:
         # condition 2
         movq a2X, %rdi              
         incq %rdi
-        cmpq $xSize, %rdi
+        cmpq xSize, %rdi
         jge iBlockCheckCanRotateReturnFalse
 
         # condition 3 - 

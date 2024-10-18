@@ -157,7 +157,7 @@ sBlockCheckCanRotate:
         # condition 1
         movq a4Y, %rdi              
         incq %rdi
-        cmpq $ySize, %rdi
+        cmpq ySize, %rdi
         jge sBlockCheckCanRotateReturnFalse
 
         # condition 2 - 
