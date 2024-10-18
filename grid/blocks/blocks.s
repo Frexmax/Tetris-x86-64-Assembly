@@ -62,13 +62,10 @@
 
 
 /* 
+@param - rdi - the type of the block in cell
 @return - rax - the color value for this block type
 */
 getColorFromType:
-    pushq %rdi
-
-    movq currentBlockType, %rdi
-
     cmpq tBlockType, %rdi
     je setColorTBlock
     
@@ -79,13 +76,16 @@ getColorFromType:
     je setColorJBlock
 
     cmpq lBlockType, %rdi
-    je setColorIBlock
+    je setColorLBlock
 
     cmpq sBlockType, %rdi
-    je setColorIBlock
+    je setColorSBlock
 
     cmpq zBlockType, %rdi
     je setColorIBlock
+
+    cmpq oBlockType, %rdi
+    je setColorOBlock
 
     setColorTBlock:
         movq TBLOCKCOLOR, %rax
@@ -116,7 +116,6 @@ getColorFromType:
         jmp exitGetColorFromType
 
     exitGetColorFromType:
-        popq %rdi
         ret
 
 /* 
@@ -342,22 +341,22 @@ setTetrino:
 
     movq a1X, %rdi
     movq a1Y, %rsi
-    movq $1, %rdx
+    movq currentBlockType, %rdx
     call writeToBufferFromXY
 
     movq a2X, %rdi
     movq a2Y, %rsi
-    movq $1, %rdx
+    movq currentBlockType, %rdx
     call writeToBufferFromXY
 
     movq a3X, %rdi
     movq a3Y, %rsi
-    movq $1, %rdx
+    movq currentBlockType, %rdx
     call writeToBufferFromXY
 
     movq a4X, %rdi
     movq a4Y, %rsi
-    movq $1, %rdx
+    movq currentBlockType, %rdx
     call writeToBufferFromXY
 
     popq %rdi

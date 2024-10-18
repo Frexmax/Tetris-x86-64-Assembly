@@ -97,11 +97,16 @@ drawGrid:
             jmp nextLoopIteration               
             */
 
+
             movzbq %al, %rdi            # arg 1 - indexX in our coordinate system where the block should be drawn
             movb %ah, %al
             movzbq %al, %rsi            # arg 2 - indexY in our coordinate system where the block should be drawn
 
+            pushq %rdi
+            movq %r10, %rdi
             call getColorFromType
+            popq %rdi
+
             movq %rax, %rdx
             call drawCell   
             jmp nextLoopIteration   
