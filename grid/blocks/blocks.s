@@ -1,4 +1,7 @@
 .include "grid/blocks/t_block/t_block.s"
+.include "grid/blocks/o_block/o_block.s"
+.include "grid/blocks/i_block/i_block.s"
+.include "grid/blocks/s_block/s_block.s"
 
 
 .data
@@ -128,6 +131,15 @@ spawnBlock:
     cmpq tBlockType, %rdi               # check if the current block is a T-block
     je tBlockSpawnBlock                 # if it is then call the spawnBlock subro
 
+    cmpq iBlockType, %rdi
+    je iBlockSpawnBlock
+
+    cmpq oBlockType, %rdi
+    je oBlockSpawnBlock
+
+    cmpq sBlockType, %rdi
+    je sBlockSpawnBlock
+
     jmp exitSpawnBlock
 
     exitSpawnBlock:
@@ -142,7 +154,16 @@ depending on the type, the subroutine for the specific tetrino will be called
 checkCanFall:
     cmpq tBlockType, %rdi                   # check if the current block is a T-block
     je tBlockCheckCanFall                   # if it is then call the checkCanFall subroutine for the T-block
-                                            
+
+    cmpq iBlockType, %rdi
+    je iBlockCheckCanFall
+
+    cmpq oBlockType, %rdi
+    je oBlockCheckCanFall
+
+    cmpq sBlockType, %rdi
+    je sBlockCheckCanFall
+
     jmp exitCheckCanFall
 
     exitCheckCanFall:
@@ -157,6 +178,15 @@ depending on the type, the subroutine for the specific tetrino will be called
 checkCanRotate:
     cmpq tBlockType, %rdi
     je tBlockCheckCanRotate
+
+    cmpq iBlockType, %rdi
+    je iBlockCheckCanRotate
+
+    cmpq oBlockType, %rdi
+    je oBlockCheckCanRotate
+
+    cmpq sBlockType, %rdi
+    je sBlockCheckCanRotate
 
     jmp exitCheckCanRotate
 
@@ -173,6 +203,15 @@ checkCanGoRight:
     cmpq tBlockType, %rdi
     je tBlockCheckCanGoRight
 
+    cmpq iBlockType, %rdi
+    je iBlockCheckCanGoRight
+
+    cmpq oBlockType, %rdi
+    je oBlockCheckCanGoRight
+
+    cmpq sBlockType, %rdi
+    je sBlockCheckCanGoRight
+
     jmp exitCheckCanGoRight
 
     exitCheckCanGoRight:
@@ -187,6 +226,15 @@ depending on the type, the subroutine for the specific tetrino will be called
 checkCanGoLeft:
     cmpq tBlockType, %rdi
     je tBlockCheckCanGoLeft
+
+    cmpq iBlockType, %rdi
+    je iBlockCheckCanGoLeft
+
+    cmpq oBlockType, %rdi
+    je oBlockCheckCanGoLeft
+
+    cmpq sBlockType, %rdi
+    je sBlockCheckCanGoLeft
 
     jmp exitCheckCanGoLeft
     

@@ -307,13 +307,8 @@ takeAction:
         cmpq TRUE, %rax                 # if moving right is possible:
         jne exitTakeAction
 
-        movq currentBlockType, %rdi
         call clearTetrino
-
-        movq currentBlockType, %rdi
         call goRight                       # then move the tetrino left
-
-        movq currentBlockType, %rdi
         call setTetrino
 
         jmp exitTakeAction              # action performed, exit subroutine
@@ -327,13 +322,8 @@ takeAction:
         cmpq TRUE, %rax                 # if moving left is possible:
         jne exitTakeAction                     # then move the tetrino left
 
-        movq currentBlockType, %rdi
         call clearTetrino
-
-        movq currentBlockType, %rdi
         call goLeft                       # then move the tetrino left
-
-        movq currentBlockType, %rdi
         call setTetrino
 
         jmp exitTakeAction              # action performed, exit subroutine
