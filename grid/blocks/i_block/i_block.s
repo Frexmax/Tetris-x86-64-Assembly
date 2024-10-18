@@ -372,7 +372,7 @@ iBlockCheckCanGoLeft:
         cmpq $0, %rax
         jne iBlockCheckCanGoLeftReturnFalse
         
-        jmp iBlockCheckCanGoLeftReturnFalse
+        jmp iBlockCheckCanGoLeftReturnTrue
 
     iBlockCheckCanGoLeftState2:        
         # condition 1
@@ -447,7 +447,6 @@ iBlockRotate:
     jmp exitiBlockCheckRotate
 
     iBlockRotateState1:
-        pushq %rdi
         movq $2, currentState
         movq a3X, %rdi
         
@@ -468,7 +467,6 @@ iBlockRotate:
         jmp exitiBlockRotate
             
     iBlockRotateState2:
-        pushq %rdi
         movq $1, currentState
         movq a2Y, %rdi
     

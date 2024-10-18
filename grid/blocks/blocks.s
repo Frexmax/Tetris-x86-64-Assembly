@@ -262,6 +262,15 @@ rotate:
     cmpq tBlockType, %rdi
     je tBlockRotate
 
+    cmpq iBlockType, %rdi
+    je iBlockRotate
+
+    cmpq oBlockType, %rdi
+    je oBlockRotate
+
+    cmpq sBlockType, %rdi
+    je sBlockRotate
+
     jmp exitRotate
 
     exitRotate:

@@ -344,7 +344,7 @@ sBlockCheckCanGoLeft:
         cmpq $0, %rax
         jne sBlockCheckCanGoLeftReturnFalse
 
-        jmp sBlockCheckCanGoLeftReturnFalse
+        jmp sBlockCheckCanGoLeftReturnTrue
 
     sBlockCheckCanGoLeftState2:        
         # condition 1
@@ -411,7 +411,6 @@ sBlockRotate:
     jmp exitsBlockCheckRotate
 
     sBlockRotateState1:
-        pushq %rdi
         movq $2, currentState
         
         # a1 changes
@@ -430,7 +429,6 @@ sBlockRotate:
         jmp exitsBlockRotate
             
     sBlockRotateState2:
-        pushq %rdi
         movq $1, currentState
     
         # a1 changes

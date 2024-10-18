@@ -1,3 +1,5 @@
+# BUG: WITH NEW BLOCK: COLOR CHANGES FOR EVERYTHING
+
 .include "input/input.s"
 .include "utils/utils.s"
 .include "colors/colors.s"
@@ -202,7 +204,6 @@ generateNextTetrino:
     movq $318, %rax                     # set syscall to getrandom   
     syscall         
 
-    
     movq randomNumberBuffer, %rax
     movq blockCount, %rdi
     movq $0, %rdx
@@ -337,13 +338,9 @@ takeAction:
         cmpq TRUE, %rax                 # if rotating the tetrino is possible:
         jne exitTakeAction                     # then rotate the tetrino
 
-        movq currentBlockType, %rdi
         call clearTetrino
-
         movq currentBlockType, %rdi
         call rotate                       # then move the tetrino left
-
-        movq currentBlockType, %rdi
         call setTetrino
 
         jmp exitTakeAction              # action performed, exit subroutine
