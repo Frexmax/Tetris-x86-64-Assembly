@@ -272,7 +272,7 @@ gridShift:
 
 /* 
 */
-checkGrid:
+checkGrid:                              # CHECK GRID BUGGY !!!!
     pushq %rdi
     pushq %r10
     
@@ -293,7 +293,7 @@ checkGrid:
     shiftGridFromLine:
         movq %r10, %rdi
         call gridShift
-        jmp loopCheckGrid
+        jmp nextCheckGridLoopIteration
 
     nextCheckGridLoopIteration:
         decq %r10

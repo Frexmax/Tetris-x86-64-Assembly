@@ -194,18 +194,16 @@ checkCanGoLeft:
         ret
 
 /* 
-Wrapper function for the tetrino fall subroutine, 
+Move tetrino down
 depending on the type, the subroutine for the specific tetrino will be called
 @param - rdi - tetrino type
 */
 fall:
-    cmpq tBlockType, %rdi
-    je tBlockFall
-
-    jmp exitFall
-    
-    exitFall:
-        ret
+    decq a1Y
+    decq a2Y
+    decq a3Y
+    decq a4Y
+    ret
 
 /* 
 Wrapper function for the tetrino rotate subroutine, 
@@ -222,57 +220,89 @@ rotate:
         ret
 
 /* 
-Wrapper function for the tetrino goRight subroutine, 
+Move tetrino right
 depending on the type, the subroutine for the specific tetrino will be called
-@param - rdi - tetrino type
 */
 goRight:
-    cmpq tBlockType, %rdi
-    je tBlockGoRight
-
-    jmp exitGoRight
-
-    exitGoRight:
-        ret
+    incq a1X
+    incq a2X
+    incq a3X
+    incq a4X
+    ret
 
 /* 
-Wrapper function for the tetrino goLeft subroutine, 
+Move tetrino left
 depending on the type, the subroutine for the specific tetrino will be called
 @param - rdi - tetrino type
 */
 goLeft:
-    cmpq tBlockType, %rdi
-    je tBlockGoLeft
-
-    jmp exitGoLeft
-
-    exitGoLeft:
-        ret
+    decq a1X
+    decq a2X
+    decq a3X
+    decq a4X
+    ret
 
 /* 
-Wrapper function for the tetrino clearTetrino subroutine, 
+Clear tetrino from the grid
 depending on the type, the subroutine for the specific tetrino will be called
-@param - rdi - tetrino type
 */
 clearTetrino:
-    cmpq tBlockType, %rdi
-    je tBlockClearTetrino
+    pushq %rdi
+    pushq %rsi
 
-    jmp exitClearTetrino
+    movq a1X, %rdi
+    movq a1Y, %rsi
+    movq $0, %rdx
+    call writeToBufferFromXY
 
-    exitClearTetrino:
-        ret
+    movq a2X, %rdi
+    movq a2Y, %rsi
+    movq $0, %rdx
+    call writeToBufferFromXY
+
+    movq a3X, %rdi
+    movq a3Y, %rsi
+    movq $0, %rdx
+    call writeToBufferFromXY
+
+    movq a4X, %rdi
+    movq a4Y, %rsi
+    movq $0, %rdx
+    call writeToBufferFromXY
+
+    popq %rdi
+    popq %rsi
+    ret
+
 
 /* 
-Wrapper function for the tetrino setTetrino subroutine, 
+Set tetrino on the grid
 depending on the type, the subroutine for the specific tetrino will be called
-@param - rdi - tetrino type
 */
 setTetrino:
-    cmpq tBlockType, %rdi
-    je tBlockSetTetrino
+    pushq %rdi
+    pushq %rsi
 
-    jmp exitSetTetrino
+    movq a1X, %rdi
+    movq a1Y, %rsi
+    movq $1, %rdx
+    call writeToBufferFromXY
 
-    exitSetTetrino:
-        ret
+    movq a2X, %rdi
+    movq a2Y, %rsi
+    movq $1, %rdx
+    call writeToBufferFromXY
+
+    movq a3X, %rdi
+    movq a3Y, %rsi
+    movq $1, %rdx
+    call writeToBufferFromXY
+
+    movq a4X, %rdi
+    movq a4Y, %rsi
+    movq $1, %rdx
+    call writeToBufferFromXY
+
+    popq %rdi
+    popq %rsi
+    ret

@@ -136,7 +136,7 @@ mainGameLoop:
 
     call tryFall
 
-    call checkGrid
+    # call checkGrid                    # BUGGY
 
     call BeginDrawing                   # Setup raylib canvas to start drawing
         // movq $1, %rdi
@@ -211,7 +211,7 @@ generateNextTetrino:
     movq %rdx, currentBlockType         # store the result as the current block type
 
     # TEMP, AS NO OTHER BLOCKS IMPLEMENTED
-    movq $1, currentBlockType
+    # movq $1, currentBlockType
 
     popq %rdx
     popq %rsi

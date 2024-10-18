@@ -14,23 +14,8 @@
     .globl tBlockCheckCanGoLeft
     .type tBlockCheckCanGoLeft, @function
 
-	.globl	tBlockFall
-    .type	tBlockFall, @function
-
 	.globl	tBlockRotate
     .type	tBlockRotate, @function
-
-	.globl	tBlockGoRight
-    .type	tBlockGoRight, @function
-
-	.globl	tBlockGoLeft
-    .type	tBlockGoLeft, @function
-
-	.globl	tBlockClearTetrino
-    .type	tBlockClearTetrino, @function
-
-	.globl	tBlockSetTetrino
-    .type	tBlockSetTetrino, @function
 
 
 /* 
@@ -57,7 +42,7 @@ tBlockSpawnBlock:
     movq $5, a4X
     movq $18, a4Y
                                         
-    call checkCanFall                   # check if fall possible, if not, game over
+    call tBlockCheckCanFall                   # check if fall possible, if not, game over
     ret
 
 /* 
@@ -670,37 +655,6 @@ tBlockCheckCanGoLeft:
         popq %rdi
         ret
 
-# Can clear and set in the fall, go right, go left, rotate subroutines
-/*
-Make the T-block fall by 1 line
-*/
-tBlockFall:
-    decq a1Y
-    decq a2Y
-    decq a3Y
-    decq a4Y
-    ret
-    
-/*
-Move the T-block to the by 1 column
-*/
-tBlockGoLeft:
-    decq a1X
-    decq a2X
-    decq a3X
-    decq a4X
-    ret
-
-/*
-Move the T-block to the right by 1 column
-*/
-tBlockGoRight:
-    incq a1X
-    incq a2X
-    incq a3X
-    incq a4X
-    ret
-
 /*
 Rotate the T-block, meaning move it to the next (one of the 4) rotation states
 */
@@ -810,66 +764,3 @@ tBlockRotate:
     exitTBlockRotate:
         popq %rdi
         ret
-
-
-/* 
-Clear T-block from the grid, meaning to write 0s to cells with the T-block coordinates
-*/
-tBlockClearTetrino:
-    pushq %rdi
-    pushq %rsi
-
-    movq a1X, %rdi
-    movq a1Y, %rsi
-    movq $0, %rdx
-    call writeToBufferFromXY
-
-    movq a2X, %rdi
-    movq a2Y, %rsi
-    movq $0, %rdx
-    call writeToBufferFromXY
-
-    movq a3X, %rdi
-    movq a3Y, %rsi
-    movq $0, %rdx
-    call writeToBufferFromXY
-
-    movq a4X, %rdi
-    movq a4Y, %rsi
-    movq $0, %rdx
-    call writeToBufferFromXY
-
-    popq %rdi
-    popq %rsi
-    ret
-
-/*
-Set T-block in the grid, meaning write the colour value of the T-block to cells with the T-block coordinates
-*/
-tBlockSetTetrino:
-    pushq %rdi
-    pushq %rsi
-
-    movq a1X, %rdi
-    movq a1Y, %rsi
-    movq $1, %rdx
-    call writeToBufferFromXY
-
-    movq a2X, %rdi
-    movq a2Y, %rsi
-    movq $1, %rdx
-    call writeToBufferFromXY
-
-    movq a3X, %rdi
-    movq a3Y, %rsi
-    movq $1, %rdx
-    call writeToBufferFromXY
-
-    movq a4X, %rdi
-    movq a4Y, %rsi
-    movq $1, %rdx
-    call writeToBufferFromXY
-
-    popq %rdi
-    popq %rsi
-    ret
