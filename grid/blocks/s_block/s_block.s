@@ -102,6 +102,14 @@ sBlockCheckCanFall:
         jl sBlockCheckCanFallReturnFalse
 
         # condition 2 - 
+        movq a1X, %rdi
+        movq a1Y, %rsi
+        decq %rsi
+        call getBlockValue
+        cmpq $0, %rax
+        jne sBlockCheckCanFallReturnFalse
+
+        # condition 3 - 
         movq a3X, %rdi
         movq a3Y, %rsi
         decq %rsi
