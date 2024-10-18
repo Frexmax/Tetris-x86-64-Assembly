@@ -138,8 +138,6 @@ mainGameLoop:
 
     call tryFall
 
-    # call checkGrid                    # BUGGY
-
     call BeginDrawing                   # Setup raylib canvas to start drawing
 
         call drawGrid
@@ -255,6 +253,7 @@ tryFall:
             jmp exitTryFall
 
         fallNotPossible:
+            call checkGrid                  # BUGGY
             call checkGameOver
             jmp exitTryFall
 

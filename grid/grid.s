@@ -208,8 +208,8 @@ copyLineAbove:
     pushq %rdi
     pushq %rsi
     pushq %rdx
-    pushq %r11
     pushq %r10
+    pushq %r11
 
     movq %rdi, %r11                     # store indexY in r11, as rdi will be used to pass arguments to getBlockValue
     movq %rdi, %r12                     # copy indexY to r12, to later get the indexY of next line 
@@ -228,6 +228,7 @@ copyLineAbove:
         movq %r12, %rsi                 # arg 2 of getBlockValue - indexY, which is the y of the line above
         call getBlockValue              # get the value at indexX, indexY in the buffer
         
+        movq %r10, %rdi
         movq %r11, %rsi                 # arg 2 of writeToBufferFromXY - indexY, which is the y of the line being copied to
         movq %rax, %rdx                 # arg 3 of writeToBufferFromXY - value, which will be written in the cell, here the value returned by getBlockValue
         call writeToBufferFromXY        # (note: indexX is already in rdi)
@@ -283,7 +284,6 @@ checkGrid:                              # CHECK GRID BUGGY !!!!
     
     movq ySize, %r10
     decq %r10
-
     loopCheckGrid:
         cmpq $0, %r10
         jl exitCheckGrid
