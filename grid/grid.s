@@ -357,6 +357,7 @@ Beforehand indexY is converted to match the raylib coordinate system
 @param - indexX - rdi - x index of our container (not referring to raylib window positions)
 @param - indexY - rsi - y index of our container (not referring to raylib window positions)
 @param - rdx - color of the block (32-bit RGBA)
+@param %r15 - shift right by halfSize flag
 */
 drawCell:
     # save registers used in subroutine
@@ -367,6 +368,13 @@ drawCell:
     pushq %r8
 
     imulq cellSize, %rdi                # scale indexX by cellSize to get pixelX in raylib (arg 1 of raylib DrawRectangle)
+    cmpq TRUE, %r15
+    je shiftRightHalfCellSize
+    jmp skip
+
+    shiftRightHalfCellSize:
+        addq halfCellSize, %rdi 
+    skip:
 
     # convert y-coordinate from our system to raylib 
     movq ySize, %rcx                    # store ySize in rcx

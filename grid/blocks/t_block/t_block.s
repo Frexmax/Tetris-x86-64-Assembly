@@ -45,6 +45,24 @@ tBlockSpawnBlock:
     call tBlockCheckCanFall                   # check if fall possible, if not, game over
     ret
 
+tBlockSetInfoPoint:
+    # point a1
+    movq $12, infoA1X                        
+    movq $17, infoA1Y                        
+
+    # point a2                            
+    movq $13, infoA2X
+    movq $17, infoA2Y
+
+    # point a3
+    movq $14, infoA3X
+    movq $17, infoA3Y
+
+    # point 4
+    movq $13, infoA4X
+    movq $16, infoA4Y
+    ret
+
 /* 
 Returns TRUE if T-block can fall, depending on the current position and rotation state, else 0
 @return - boolean value TRUE (1) or FALSE (0) in (rax)

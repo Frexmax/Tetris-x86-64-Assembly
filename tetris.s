@@ -7,6 +7,7 @@
 .include "grid/grid.s"
 .include "audio/audio.s"
 .include "grid/blocks/block_config.s"
+.include "info_screen/info_screen.s"
 
 .data
 
@@ -29,7 +30,7 @@
 main:
     prologue                            # set up stack frame
 
-    #call readBestScore                  # read best score from file
+    # call readBestScore                  # read best score from file
     
     initializeScreenSize                # initialize screen width and height based on cell size and grid size
     movq screenWidth, %rdi              # arg 1 - int - screen width
@@ -48,83 +49,14 @@ main:
 
     setUpFallingInfo
 
+    call generateNextTetrino
     movq currentBlockType, %rdi
     call spawnBlock
+
+    movq nextBlockType, %rdi
+    call setInfoPointsFromNextType
+
     call setTetrino
-
-
-/*
-movq $buffer, %r9
-    movb $1, (%r9)
-    
-    movb $23, 1(%r9)
-    movb $0, 2(%r9)
-    movb $1, 3(%r9)
-    movb $0, 4(%r9)
-    movb $1, 5(%r9)
-    movb $0, 6(%r9)
-    movb $1, 7(%r9)
-    movb $0, 8(%r9)
-    movb $1, 9(%r9)
-
-
-    movb $1, 10(%r9)
-    movb $0, 11(%r9)
-    movb $1, 12(%r9)
-    movb $0, 13(%r9)
-    movb $1, 14(%r9)
-    movb $0, 15(%r9)
-    movb $1, 16(%r9)
-    movb $0, 17(%r9)
-    movb $1, 18(%r9)
-    movb $0, 19(%r9)
-
-    movb $0, 20(%r9)
-    movb $1, 21(%r9)
-    movb $0, 22(%r9)
-    movb $1, 23(%r9)
-    movb $0, 24(%r9)
-    movb $1, 25(%r9)
-    movb $0, 26(%r9)
-    movb $1, 27(%r9)
-    movb $0, 28(%r9)
-    movb $1, 29(%r9)
-
-    movb $1, 30(%r9)
-    movb $1, 31(%r9)
-    movb $1, 32(%r9)
-    movb $1, 33(%r9)
-    movb $1, 34(%r9)
-    movb $1, 35(%r9)
-    movb $1, 36(%r9)
-    movb $1, 37(%r9)
-    movb $1, 38(%r9)
-    movb $1, 39(%r9)
-
-    movb $1, 66(%r9)
-
-    movb $0, 180(%r9)
-    movb $0, 181(%r9)
-    movb $0, 182(%r9)
-    movb $1, 183(%r9)
-    movb $1, 184(%r9)
-    movb $1, 185(%r9)
-    movb $0, 186(%r9)
-    movb $0, 187(%r9)
-    movb $0, 188(%r9)
-    movb $0, 189(%r9)
-
-    movb $0, 190(%r9)
-    movb $0, 191(%r9)
-    movb $0, 192(%r9)
-    movb $0, 193(%r9)
-    movb $1, 194(%r9)
-    movb $0, 195(%r9)
-    movb $0, 196(%r9)
-    movb $0, 197(%r9)
-    movb $0, 198(%r9)
-    movb $0, 199(%r9)
-*/
 
     jmp mainGameLoop                    # go to main game loop 
 
@@ -141,8 +73,11 @@ mainGameLoop:
     call tryFall
 
     call BeginDrawing                   # Setup raylib canvas to start drawing
+        movq INFOSCREENBACKGROUND, %rdi                # arg 1 - 32-bits RGBA - color
+        call ClearBackground            # clear background with color in struct on stack
 
         call drawGrid
+        call drawInfoScreen
 
     call EndDrawing                     # End canvas drawing
     
@@ -195,12 +130,19 @@ generateNextTetrino:
     pushq %rsi
     pushq %rdx
 
+    movq nextBlockType, %rdi
+    movq %rdi, currentBlockType
+
     # Call GetRandomValue(min, max) with min = 1, max = 7
     movq $1, %rdi                # min argument
     movq blockCount, %rsi        # max argument (7)
     call GetRandomValue          # call the raylib function
 
-    movq %rax, currentBlockType  # store the result as the current block type
+    movq %rax, nextBlockType
+    # movq %rax, currentBlockType  # store the result as the current block type
+
+    movq nextBlockType, %rdi
+    call setInfoPointsFromNextType
 
     popq %rdx
     popq %rsi

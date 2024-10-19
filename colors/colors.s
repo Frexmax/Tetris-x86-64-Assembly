@@ -25,9 +25,10 @@
 
     // BACKGROUND: .quad 0xffffffff
     // BACKGROUND: .quad 0xff505050
-    BACKGROUND: .quad 0xff2e2e2e
-
-    
+    // BACKGROUND: .quad 0xff2e2e2e
+    //BACKGROUND: .quad 0xffa6413d
+    BACKGROUND: .quad 0xffab5e5b
+    INFOSCREENBACKGROUND: .quad 0xff7d421e
 
 .macro setColorText # color to be decided
     subq $16, %rsp
