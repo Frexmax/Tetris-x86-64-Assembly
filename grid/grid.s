@@ -313,51 +313,14 @@ checkGrid:                              # CHECK GRID BUGGY !!!!
         ret
 
 /*
-Check if the grid has at least a full line, if it does then return 1 in rax, else return 0
-@return - boolean value TRUE (1) or FALSE (0) in (rax) <--- NOTE: maybe return index of the line (y index)
-*/
-
-/*
-checkGrid:
-    # save registers used in subroutine
-    pushq %rdi
-    pushq %r10
-
-    movq $0, %r10                      # initialize loop counter, starting from y = 0
-    loopCheckGrid:
-        cmpq ySize, %r10               # if y >= ySize, exit loop
-        jge gridHasNoFullLine
-
-        movq %r10, %rdi                # arg 1 of checkLine - indexY, which is equal to the current iteration of the loop
-        call checkLine                 # check if the current line is full
-        
-        cmpq $1, %rax                  # if checkLine returned TRUE (1), meaning the line is full
-        je gridHasFullLine             # exit with 0 in %rax
-
-        incq %r10                      # go to the next line
-        jmp loopCheckGrid              # repeat the loop
-
-    gridHasNoFullLine:
-        movq $1, %rax                  # return 1, meaning no full lines found
-        jmp exitCheckGrid
-
-    gridHasFullLine:
-        movq $0, %rax                  # return 0, meaning at least one full line was found
-
-    exitCheckGrid:
-        # retrieve registers used in subroutine
-        popq %r10
-        popq %rdi
-        ret
-*/
-
-/*
 Draw block cellSize x cellSize at position indexX, indexY in our coordinate system in the raylib window.
 Beforehand indexY is converted to match the raylib coordinate system 
 @param - indexX - rdi - x index of our container (not referring to raylib window positions)
 @param - indexY - rsi - y index of our container (not referring to raylib window positions)
 @param - rdx - color of the block (32-bit RGBA)
-@param %r15 - shift right by halfSize flag
+@param - r13 - draw block half a cell lower
+@param r14 - offset the border size
+@param r15 - shift right by halfSize flag
 */
 drawCell:
     # save registers used in subroutine
@@ -368,13 +331,22 @@ drawCell:
     pushq %r8
 
     imulq cellSize, %rdi                # scale indexX by cellSize to get pixelX in raylib (arg 1 of raylib DrawRectangle)
+
+    cmpq TRUE, %r14
+    je offsetBorder
+    jmp skipBorderShift
+
+    offsetBorder:
+        addq borderWidth, %rdi
+    skipBorderShift:
+
     cmpq TRUE, %r15
     je shiftRightHalfCellSize
-    jmp skip
+    jmp skipRightShift
 
     shiftRightHalfCellSize:
         addq halfCellSize, %rdi 
-    skip:
+    skipRightShift:
 
     # convert y-coordinate from our system to raylib 
     movq ySize, %rcx                    # store ySize in rcx
@@ -382,6 +354,14 @@ drawCell:
     subq $1, %rcx                       # ySize - y - 1 <- done because y starts at 0
     imulq cellSize, %rcx                # get pixelY (in raylib)
     movq %rcx, %rsi                     # copy pixelY to rsi (arg 2 of raylib DrawRectangle) from rcx
+
+    cmpq TRUE, %r13
+    je shiftDownHalfCellSize
+    jmp skipDownShift
+
+    shiftDownHalfCellSize:
+        addq halfCellSize, %rsi
+    skipDownShift:
 
     movq %rdx, %r8                      # arg-4 of raylib DrawRectangle - 32-bit RGBA - color of the block     
     movq cellSize, %rdx                 # arg 2 of raylib DrawRectangle - int - width of block

@@ -112,30 +112,140 @@ setNextBlockInfoPointsFromSpawn:
     popq %rdi
     ret
 
+
+   #  void DrawRectangleLines(int posX, int posY, int width, int height, Color color);                   // Draw rectangle outline
+
+/*
+*/
+drawNextBlockOutline:
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+
+    # LINE 1 - horizontal
+    # xPos
+    movq $11, %rdi
+    imulq cellSize, %rdi
+    # yPos
+    movq $1, %rsi
+    imulq cellSize, %rsi
+    # width
+    movq $5, %rdx
+    imulq cellSize, %rdx
+    addq halfCellSize, %rdx
+    # height
+    movq nextBlockOutlineWidth, %rcx
+    # color
+    movq NEXTBLOCKOUTLINECOLOR, %r8
+    # draw
+    call DrawRectangle
+
+    # LINE 2 - horizontal
+    # xPos
+    movq $11, %rdi
+    imulq cellSize, %rdi    
+    # yPos
+    movq $5, %rsi
+    imulq cellSize, %rsi
+    # width
+    movq $5, %rdx
+    imulq cellSize, %rdx
+    addq halfCellSize, %rdx
+    # height
+    movq nextBlockOutlineWidth, %rcx
+    # color
+    movq NEXTBLOCKOUTLINECOLOR, %r8
+    # draw
+    call DrawRectangle
+
+    # VERTICALS
+
+    # LINE 3 - vertical
+    # xPos
+    movq $16, %rdi
+    imulq cellSize, %rdi
+    addq halfCellSize, %rdi
+    subq nextBlockOutlineWidth, %rdi
+
+    # yPos
+    movq $1, %rsi
+    imulq cellSize, %rsi
+    # width
+    movq nextBlockOutlineWidth, %rdx
+    # height
+    movq $4, %rcx
+    imulq cellSize, %rcx
+    # color
+    movq NEXTBLOCKOUTLINECOLOR, %r8
+    # draw
+    call DrawRectangle
+
+    # LINE 4 - vertical
+    # xPos
+    movq $11, %rdi
+    imulq cellSize, %rdi
+    # yPos
+    movq $1, %rsi
+    imulq cellSize, %rsi
+    # width
+    movq nextBlockOutlineWidth, %rdx
+    # height
+    movq $4, %rcx
+    imulq cellSize, %rcx
+    # color
+    movq NEXTBLOCKOUTLINECOLOR, %r8
+    # draw
+    call DrawRectangle
+
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+    ret
+
 /* 
 */
 drawNextBlock:
     pushq %rdi
     pushq %rsi
     pushq %rdx
+    pushq %r13
+    pushq %r14
     pushq %r15
+
+    movq TRUE, %r14 
+
+    movq nextBlockType, %rdi
+    cmpq %rdi, iBlockType
+    je setDownShiftFlag
+    jmp unSetDownShiftFlag
+
+    setDownShiftFlag:
+        movq TRUE, %r13
+        jmp continueFromDownShift
+    unSetDownShiftFlag:
+        movq FALSE, %r13
+    continueFromDownShift:
 
     movq nextBlockType, %rdi
     cmpq %rdi, oBlockType
-    je setShiftFlag
+    je setRightShiftFlag
     
     movq nextBlockType, %rdi
     cmpq %rdi, iBlockType
-    je setShiftFlag
+    je setRightShiftFlag
     
-    jmp skipSet
+    jmp unSetRightShiftFlag
 
-    setShiftFlag:
+    setRightShiftFlag:
         movq TRUE, %r15
-        jmp continue
-    skipSet:
+        jmp continueFromRightShift
+    unSetRightShiftFlag:
         movq FALSE, %r15
-    continue:
+    continueFromRightShift:
 
     movq nextBlockType, %rdi
     call getColorFromType
@@ -144,7 +254,6 @@ drawNextBlock:
     movq infoA1Y, %rsi
     movq %rax, %rdx
     call drawCell
-
 
     movq nextBlockType, %rdi
     call getColorFromType
@@ -168,6 +277,8 @@ drawNextBlock:
     call drawCell
 
     popq %r15
+    popq %r14
+    popq %r13
     popq %rdx
     popq %rdi
     popq %rsi
@@ -175,6 +286,38 @@ drawNextBlock:
 
 /* 
 */
+drawInfoBorder:
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+
+    movq xSize, %rdi
+    imulq cellSize, %rdi
+
+    movq $0, %rsi
+    
+    movq borderWidth, %rdx
+
+    movq ySize, %rcx
+    imulq cellSize, %rcx
+
+    movq BORDERCOLOUR, %r8
+
+    call DrawRectangle
+
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+    ret
+
+/* 
+*/
 drawInfoScreen:
     call drawNextBlock
+    call drawNextBlockOutline
+    call drawInfoBorder
     ret

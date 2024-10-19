@@ -28,7 +28,18 @@
     // BACKGROUND: .quad 0xff2e2e2e
     //BACKGROUND: .quad 0xffa6413d
     BACKGROUND: .quad 0xffab5e5b
-    INFOSCREENBACKGROUND: .quad 0xff7d421e
+    
+    # INFOSCREENBACKGROUND: .quad 0xff7d421e
+    # INFOSCREENBACKGROUND: .quad 0xff4f071a
+    # INFOSCREENBACKGROUND: .quad 0xff3b2927
+    # INFOSCREENBACKGROUND: .quad 0xff331d1b
+    INFOSCREENBACKGROUND: .quad 0xff4a2723
+
+    # BORDERCOLOUR: .quad 0xff6e3816
+    BORDERCOLOUR: .quad 0xff5c2c0e
+
+    # NEXTBLOCKOUTLINECOLOR: .quad 0xff361c2e
+    NEXTBLOCKOUTLINECOLOR: .quad 0xff300e0a
 
 .macro setColorText # color to be decided
     subq $16, %rsp
