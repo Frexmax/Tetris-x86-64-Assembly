@@ -10,7 +10,7 @@
     subq $80, %rsp                  
     leaq -160(%rbp), %rax
 
-    movq $setbackFontPath, %rsi
+    movq $romulusFontPath, %rsi
     # movq %rdx, %rsi
     movq %rax, %rdi
     call LoadFont

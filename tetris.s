@@ -10,8 +10,10 @@
 .include "info_screen/info_screen.s"
 .include "info_screen/fonts.s"
 
-.data
-
+.data   
+    roundsPlayed: .quad 0
+    roundRunning: .quad 0
+    
 .text
     digitOut: .asciz "%ld\n"
     keyOut: .asciz "Current Key: %d\n"
@@ -33,6 +35,7 @@ main:
 
     # call readBestScore                  # read best score from file
     
+    # INITALIZE THE RAYLIB WINDOW
     initializeScreenSize                # initialize screen width and height based on cell size and grid size
     movq screenWidth, %rdi              # arg 1 - int - screen width
     movq screenHeight, %rsi             # arg 2 - int - screen height
@@ -40,29 +43,61 @@ main:
     call InitWindow                     # call raylib to initialize window
 
     # AUDIO SET UP
-    call InitAudioDevice                
+    call InitAudioDevice                # call raylib to initialize audio          
     setUpAudio                          # macro to get music struct
     passMusicStruct                     # pass received music struct as argument
     call PlayMusicStream                # play music
 
     # FONT SET UP
-    setUpFont
+    setUpFont                           # load custom font - under development
 
+    # WINDOW FPS
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
+    
+    # BLOCK CONFIG
+    setUpFallingInfo                    # calculate values for the fall rate of blocks   
+    setUpBlocksForRound                 # prepare current block and next block for the start of the round
 
-    setUpFallingInfo
+    jmp roundWaitLoop                 # loop to wait for user decision
 
-    call generateNextTetrino
-    movq currentBlockType, %rdi
-    call spawnBlock
+roundWaitLoop:
+    call WindowShouldClose              # check if the window should be closed: when escape key pressed or window close icon clicked
+    cmpq $0, %rax                       # if WindowShouldClose returns true (anything else than 0) then exit program
+	jne quitGame                        # quit game
+    
+    call BeginDrawing                   # Setup raylib canvas to start drawing
+        movq INFOSCREENBACKGROUND, %rdi # arg 1 - 32-bits RGBA - color
+        call ClearBackground            # clear background with color in struct on stack
 
-    movq nextBlockType, %rdi
-    call setInfoPointsFromNextType
+        call drawGrid                   # draw based on the value of the buffer (our grid)
+        call drawInfoScreen             # draw information of the info screen
 
-    call setTetrino
+        cmpq $0, roundsPlayed
+        je gameStartDisplay
+        jmp gameOverDisplay
 
-    jmp mainGameLoop                    # go to main game loop 
+        gameStartDisplay:
+            call drawStartGameText
+            
+            call GetKeyPressed                  # call raylib to get currently pressed key
+            cmpq KEY_S, %rax                    # if the user presses S start a new round
+            je mainGameLoop                     # go to main game loop
+            jmp continueFromDisplays
+
+        gameOverDisplay:
+            call drawGameOverText
+            
+            call GetKeyPressed                  # call raylib to get currently pressed key
+            cmpq KEY_R, %rax                    # also if the user presses R, then start new round (after game over)
+            je mainGameLoop                     # go to main game loop
+            jmp continueFromDisplays
+
+        continueFromDisplays:
+
+    call EndDrawing                     # End canvas drawing
+
+    jmp roundWaitLoop
 
 mainGameLoop:
     call WindowShouldClose              # check if the window should be closed: when escape key pressed or window close icon clicked
@@ -73,17 +108,18 @@ mainGameLoop:
     call UpdateMusicStream              # play the next part of the music
     cleanMusicStruct
 
-    call takeAction
+    call tryFall                        # update block fall
+    cmpq TRUE, %rax
+    je roundWaitLoop
 
-    call tryFall
+    call takeAction                     # handle potential user input
 
     call BeginDrawing                   # Setup raylib canvas to start drawing
-        movq INFOSCREENBACKGROUND, %rdi                # arg 1 - 32-bits RGBA - color
+        movq INFOSCREENBACKGROUND, %rdi # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
 
-        call drawGrid
-        call drawInfoScreen
-
+        call drawGrid                   # draw based on the value of the buffer (our grid)
+        call drawInfoScreen             # draw information of the info screen
     call EndDrawing                     # End canvas drawing
     
     jmp mainGameLoop                    # next iteration of the game
@@ -92,7 +128,7 @@ quitGame:
     call CloseWindow                    # close window
     call CloseAudioDevice
 
-    # call checkAndUpdateScore            # write the best score to file
+    # call checkAndUpdateScore          # write the best score to file
 
     epilogue	                        # close stack frame
     movq $0, %rdi                       # error code 0, all successful
@@ -100,6 +136,7 @@ quitGame:
 
 /* 
 @param - rdi - type of block
+@returns - TRUE (1) is game over, FALSE (0) game continues
 */
 checkGameOver:
     pushq %rdi
@@ -111,11 +148,16 @@ checkGameOver:
     
     cmpq FALSE, %rax
     je gameOver
+    movq FALSE, %rax
     jmp exitCheckGameOver
 
     gameOver:
+        incq roundsPlayed
         call clearGrid
-        
+        resetFallingInfo
+        setUpBlocksForRound
+        movq TRUE, %rax
+
         // DO SOMETHING AFTER GAME OVER ...
         // popq %rdi
         // popq %rsi
@@ -155,7 +197,7 @@ generateNextTetrino:
     ret                         
 /*
 TO DO
-NAME TO CHANGE
+@return - TRUE (1) is game over, FALSE (0) game continues
 */
 tryFall:
     # save registers used
@@ -170,6 +212,7 @@ tryFall:
     cmpq %rdi, %rsi
     jge attemptFall 
 
+    movq FALSE, %rax
     jmp exitTryFall
 
     attemptFall:
@@ -193,12 +236,12 @@ tryFall:
             movq currentBlockType, %rdi
             call setTetrino
 
+            movq FALSE, %rax
             jmp exitTryFall
 
         fallNotPossible:
             call checkGrid                  # BUGGY
             call checkGameOver
-            jmp exitTryFall
 
         jmp exitTryFall
 

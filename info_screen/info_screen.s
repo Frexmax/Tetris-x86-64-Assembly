@@ -1,22 +1,24 @@
 .include "info_screen/info_screen_config.s"
 
 .data
-    infoA1X: .quad 1
-    infoA1Y: .quad 1
+    infoA1X: .quad 100
+    infoA1Y: .quad 100
 
-    infoA2X: .quad 1
-    infoA2Y: .quad 1
+    infoA2X: .quad 100
+    infoA2Y: .quad 100
 
-    infoA3X: .quad 1
-    infoA3Y: .quad 1
+    infoA3X: .quad 100
+    infoA3Y: .quad 100
 
-    infoA4X: .quad 1
-    infoA4Y: .quad 1
+    infoA4X: .quad 100
+    infoA4Y: .quad 100
 
     tempIncrement: .quad 1
 
 .text
     nextBlockInfoText: .asciz "NEXT: "
+    gameStartInfoText: .asciz "TO START THE ROUND: \n   -PRESS 'S'\nTO QUIT THE GAME: \n    -PRESS 'ESC'"
+    gameOverInfoText: .asciz "GAME OVER! \nTO START NEW ROUND: \n    -PRESS 'R'"
 
 	.globl	drawInfoScreen
     .type	drawInfoScreen, @function
@@ -26,7 +28,6 @@
 
     .globl	drawNextBlock
     .type	drawNextBlock, @function
-
 
 /*
 @param - rdi - type of next block
@@ -61,8 +62,18 @@ setInfoPointsFromNextType:
 
 # void DrawText(const char *text, int posX, int posY, int fontSize, Color color);       // Draw text (using default font)
 
+/* 
+@param - rdi - score
+*/
+drawScoreText:
+    ret
 
 /* 
+*/
+drawRankingText:
+    ret
+
+/*  
 */
 drawNextBlockText:
     pushq %rdi
@@ -97,6 +108,81 @@ drawNextBlockText:
     popq %rsi
     popq %rdi
     ret
+
+/* 
+*/
+drawStartGameText:
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+
+    # TEXT
+    movq $gameStartInfoText, %rdi
+    
+    # X
+    movq $0, %rsi
+    imulq cellSize, %rsi
+    # addq halfCellSize, %rsi
+    addq $20, %rsi
+
+    # Y
+    movq $9, %rdx
+    imulq cellSize, %rdx
+
+    # FONTSIZE
+    movq $39, %rcx
+
+    # COLOR
+    movq BLACK, %r8
+
+    call DrawText
+
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+    ret
+
+/* 
+*/
+drawGameOverText:
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+
+    # TEXT
+    movq $gameOverInfoText, %rdi
+    
+    # X
+    movq $0, %rsi
+    imulq cellSize, %rsi
+    # addq halfCellSize, %rsi
+    addq $20, %rsi
+
+    # Y
+    movq $9, %rdx
+    imulq cellSize, %rdx
+
+    # FONTSIZE
+    movq $39, %rcx
+
+    # COLOR
+    movq BLACK, %r8
+
+    call DrawText
+
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+    ret
+
 
 /* 
 */

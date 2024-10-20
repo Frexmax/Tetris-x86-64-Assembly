@@ -65,6 +65,20 @@
     movq $1, fallRateMultiplier
 .endm
 
+.macro resetBlocks
+    movq $1, nextBlockType
+    movq $1, currentBlockType
+    movq $1, currentState
+.endm
+
+.macro setUpBlocksForRound
+    call generateNextTetrino            # generate the next random tetrino (T-block is always the starting one)
+    movq currentBlockType, %rdi         # pass the current tetrino to be spawned (i.e. set a1 to a4)
+    call spawnBlock                       
+    movq nextBlockType, %rdi            # pass the next tetrino to prepare info for next block render
+    call setInfoPointsFromNextType      
+    call setTetrino                     # set tetrino (i.e. write to buffer at positions a1 to a4 with value of the tetrino type)
+.endm
 
 /* 
 @param - rdi - the type of the block in cell
