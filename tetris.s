@@ -66,6 +66,10 @@ roundWaitLoop:
     cmpq $0, %rax                       # if WindowShouldClose returns true (anything else than 0) then exit program
 	jne quitGame                        # quit game
     
+    passMusicStruct                     # pass music struct
+    call UpdateMusicStream              # play the next part of the music
+    cleanMusicStruct
+
     call BeginDrawing                   # Setup raylib canvas to start drawing
         movq INFOSCREENBACKGROUND, %rdi # arg 1 - 32-bits RGBA - color
         call ClearBackground            # clear background with color in struct on stack
@@ -152,6 +156,7 @@ checkGameOver:
     jmp exitCheckGameOver
 
     gameOver:
+        movq $0, currentScore
         incq roundsPlayed
         call clearGrid
         resetFallingInfo

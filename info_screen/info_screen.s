@@ -19,6 +19,9 @@
     nextBlockInfoText: .asciz "NEXT: "
     gameStartInfoText: .asciz "TO START THE ROUND: \n   -PRESS 'S'\nTO QUIT THE GAME: \n    -PRESS 'ESC'"
     gameOverInfoText: .asciz "GAME OVER! \nTO START NEW ROUND: \n    -PRESS 'R'"
+    scoreText: .string "SCORE: %d"
+    currentRound: .asciz "CURRENT ROUND: %d"
+    
 
 	.globl	drawInfoScreen
     .type	drawInfoScreen, @function
@@ -59,13 +62,59 @@ setInfoPointsFromNextType:
     exitSetInfoPointsFromNextType:
         ret 
 
-
-# void DrawText(const char *text, int posX, int posY, int fontSize, Color color);       // Draw text (using default font)
-
 /* 
 @param - rdi - score
 */
 drawScoreText:
+    pushq %rbp
+    movq %rsp, %rbp
+    
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+    
+    subq $64, %rsp
+    
+    # TEXT
+    movq $scoreText, %rdi    
+    # SCORE FORMAT
+    movq currentScore, %rsi
+    movq $0, %rax
+    call TextFormat
+
+    movq %rax, %rdi
+
+    # X
+    movq $10, %rsi
+    imulq cellSize, %rsi
+    addq halfCellSize, %rsi
+    addq $4, %rsi
+
+    # Y
+    movq $8, %rdx
+    imulq cellSize, %rdx
+    subq $10, %rdx
+
+    # FONTSIZE
+    movq $50, %rcx
+
+    # COLOR
+    movq BACKGROUND, %r8
+
+    call DrawText
+    
+    addq $64, %rsp
+
+    // popq %r8
+    // popq %rcx
+    // popq %rdx
+    // popq %rsi
+    // popq %rdi
+
+    movq %rbp, %rsp
+    popq %rbp
     ret
 
 /* 
@@ -472,4 +521,5 @@ drawInfoScreen:
     call drawNextBlockOutline
     call drawInfoBorder
     call drawNextBlockText
+    call drawScoreText
     ret
