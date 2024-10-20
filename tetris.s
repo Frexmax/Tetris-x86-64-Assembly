@@ -166,11 +166,6 @@ checkGameOver:
         setUpBlocksForRound
         movq TRUE, %rax
 
-        // DO SOMETHING AFTER GAME OVER ...
-        // popq %rdi
-        // popq %rsi
-        // jmp checkGameOver
-
     exitCheckGameOver:
         popq %rdi
         popq %rdi
