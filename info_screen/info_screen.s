@@ -13,7 +13,11 @@
     infoA4X: .quad 1
     infoA4Y: .quad 1
 
+    tempIncrement: .quad 1
+
 .text
+    nextBlockInfoText: .asciz "NEXT: "
+
 	.globl	drawInfoScreen
     .type	drawInfoScreen, @function
 
@@ -53,6 +57,46 @@ setInfoPointsFromNextType:
 
     exitSetInfoPointsFromNextType:
         ret 
+
+
+# void DrawText(const char *text, int posX, int posY, int fontSize, Color color);       // Draw text (using default font)
+
+
+/* 
+*/
+drawNextBlockText:
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+
+    # TEXT
+    movq $nextBlockInfoText, %rdi
+    
+    # X
+    movq $11, %rsi
+    imulq cellSize, %rsi
+
+    # Y
+    movq $1, %rdx
+    imulq cellSize, %rdx
+    subq $10, %rdx
+
+    # FONTSIZE
+    movq $70, %rcx
+
+    # COLOR
+    movq BACKGROUND, %r8
+
+    call DrawText
+
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+    ret
 
 /* 
 */
@@ -112,9 +156,6 @@ setNextBlockInfoPointsFromSpawn:
     popq %rdi
     ret
 
-
-   #  void DrawRectangleLines(int posX, int posY, int width, int height, Color color);                   // Draw rectangle outline
-
 /*
 */
 drawNextBlockOutline:
@@ -130,6 +171,8 @@ drawNextBlockOutline:
     imulq cellSize, %rdi
     # yPos
     movq $1, %rsi
+    # TEMP
+    addq tempIncrement, %rsi
     imulq cellSize, %rsi
     # width
     movq $5, %rdx
@@ -148,6 +191,8 @@ drawNextBlockOutline:
     imulq cellSize, %rdi    
     # yPos
     movq $5, %rsi
+    # TEMP
+    addq tempIncrement, %rsi
     imulq cellSize, %rsi
     # width
     movq $5, %rdx
@@ -171,6 +216,8 @@ drawNextBlockOutline:
 
     # yPos
     movq $1, %rsi
+    # TEMP
+    addq tempIncrement, %rsi
     imulq cellSize, %rsi
     # width
     movq nextBlockOutlineWidth, %rdx
@@ -188,6 +235,8 @@ drawNextBlockOutline:
     imulq cellSize, %rdi
     # yPos
     movq $1, %rsi
+    # TEMP
+    addq tempIncrement, %rsi
     imulq cellSize, %rsi
     # width
     movq nextBlockOutlineWidth, %rdx
@@ -252,6 +301,10 @@ drawNextBlock:
 
     movq infoA1X, %rdi
     movq infoA1Y, %rsi
+
+    # TEMP
+    subq tempIncrement, %rsi
+
     movq %rax, %rdx
     call drawCell
 
@@ -259,6 +312,10 @@ drawNextBlock:
     call getColorFromType
     movq infoA2X, %rdi
     movq infoA2Y, %rsi
+
+    # TEMP
+    subq tempIncrement, %rsi
+
     movq %rax, %rdx
     call drawCell
 
@@ -266,6 +323,10 @@ drawNextBlock:
     call getColorFromType
     movq infoA3X, %rdi
     movq infoA3Y, %rsi
+
+    # TEMP
+    subq tempIncrement, %rsi
+
     movq %rax, %rdx
     call drawCell
 
@@ -273,6 +334,10 @@ drawNextBlock:
     call getColorFromType
     movq infoA4X, %rdi
     movq infoA4Y, %rsi
+
+    # TEMP
+    subq tempIncrement, %rsi
+
     movq %rax, %rdx
     call drawCell
 
@@ -320,4 +385,5 @@ drawInfoScreen:
     call drawNextBlock
     call drawNextBlockOutline
     call drawInfoBorder
+    call drawNextBlockText
     ret

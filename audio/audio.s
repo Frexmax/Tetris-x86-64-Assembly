@@ -7,8 +7,8 @@
     subq $80, %rsp                     # look why 80 works and 72 doesn't ????
     leaq -80(%rbp), %rax
 
-    movq $audioPath, %rdx
-    movq %rdx, %rsi
+    movq $audioPath, %rsi
+    # movq %rdx, %rsi
     movq %rax, %rdi
     call LoadMusicStream
 .endm
@@ -25,4 +25,15 @@
 	pushq	-64(%rbp)
 	pushq	-72(%rbp)
 	pushq	-80(%rbp)
+.endm
+
+.macro cleanMusicStruct    
+	popq	%rax
+	popq	%rax
+	popq	%rax
+	popq	%rax
+	popq	%rax
+	popq	%rax
+	popq	%rax
+    addq $8, %rsp
 .endm

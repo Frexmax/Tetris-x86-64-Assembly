@@ -8,6 +8,7 @@
 .include "audio/audio.s"
 .include "grid/blocks/block_config.s"
 .include "info_screen/info_screen.s"
+.include "info_screen/fonts.s"
 
 .data
 
@@ -38,11 +39,14 @@ main:
     movq $windowTitle, %rdx             # arg 3 - string - message
     call InitWindow                     # call raylib to initialize window
 
+    # AUDIO SET UP
     call InitAudioDevice                
     setUpAudio                          # macro to get music struct
-
     passMusicStruct                     # pass received music struct as argument
     call PlayMusicStream                # play music
+
+    # FONT SET UP
+    setUpFont
 
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
@@ -67,6 +71,7 @@ mainGameLoop:
     
     passMusicStruct                     # pass music struct
     call UpdateMusicStream              # play the next part of the music
+    cleanMusicStruct
 
     call takeAction
 
