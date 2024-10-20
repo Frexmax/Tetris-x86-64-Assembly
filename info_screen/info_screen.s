@@ -19,8 +19,8 @@
     nextBlockInfoText: .asciz "NEXT: "
     gameStartInfoText: .asciz "TO START THE ROUND: \n   -PRESS 'S'\nTO QUIT THE GAME: \n    -PRESS 'ESC'"
     gameOverInfoText: .asciz "GAME OVER! \nTO START NEW ROUND: \n    -PRESS 'R'"
-    scoreText: .string "SCORE: %d"
-    currentRound: .asciz "CURRENT ROUND: %d"
+    scoreText: .asciz "SCORE: %d"
+    currentLevelText: .asciz "LEVEL: %d"
     
 
 	.globl	drawInfoScreen
@@ -107,11 +107,65 @@ drawScoreText:
     
     addq $64, %rsp
 
-    // popq %r8
-    // popq %rcx
-    // popq %rdx
-    // popq %rsi
-    // popq %rdi
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+
+    movq %rbp, %rsp
+    popq %rbp
+    ret
+
+/* 
+@param - rdi - score
+*/
+drawLevelText:
+    pushq %rbp
+    movq %rsp, %rbp
+    
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+    
+    subq $64, %rsp
+    
+    # TEXT
+    movq $currentLevelText, %rdi    
+    # SCORE FORMAT
+    movq currentLevel, %rsi
+    movq $0, %rax
+    call TextFormat
+
+    movq %rax, %rdi
+
+    # X
+    movq $10, %rsi
+    imulq cellSize, %rsi
+    addq halfCellSize, %rsi
+    addq $4, %rsi
+
+    # Y
+    movq $9, %rdx
+    imulq cellSize, %rdx
+
+    # FONTSIZE
+    movq $50, %rcx
+
+    # COLOR
+    movq BACKGROUND, %r8
+
+    call DrawText
+    
+    addq $64, %rsp
+
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
 
     movq %rbp, %rsp
     popq %rbp
@@ -522,4 +576,5 @@ drawInfoScreen:
     call drawInfoBorder
     call drawNextBlockText
     call drawScoreText
+    call drawLevelText
     ret

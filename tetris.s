@@ -157,8 +157,11 @@ checkGameOver:
 
     gameOver:
         movq $0, currentScore
+        movq $0, currentLevel
+        movq $0, generationCounter
         incq roundsPlayed
         call clearGrid
+        setUpFallingInfo
         resetFallingInfo
         setUpBlocksForRound
         movq TRUE, %rax
@@ -181,6 +184,19 @@ generateNextTetrino:
     pushq %rdi
     pushq %rsi
     pushq %rdx
+
+    # CHECK IF DIFFICULTY LEVEL SHOULD BE INCREMENTED
+    incq generationCounter
+    movq generationCounter, %rdi
+    cmpq generationPerLevelIncrease, %rdi
+    jge nextLevel
+    jmp keepLevel
+
+    nextLevel:
+        incq currentLevel
+        decq framesPerFall
+        movq $0, generationCounter
+    keepLevel:
 
     movq nextBlockType, %rdi
     movq %rdi, currentBlockType

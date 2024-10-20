@@ -14,7 +14,11 @@
     randomNumberBuffer: .space 4, 0     # buffer where getrandom will output the random number    
     randomNumberBufferSize: .quad 4     # size of the buffer, needed for getrandom syscall
 
-    
+
+    generationPerLevelIncrease: .quad 5
+    generationCounter: .quad 0
+    currentLevel: .quad 0
+
     fallingCounter: .quad 0                   # counter to keep track how many game loops were skipped before the next fall update
     fallingRatePerSecond: .quad 1             # how many times to update the fall per second
     framesPerFall: .quad 0
