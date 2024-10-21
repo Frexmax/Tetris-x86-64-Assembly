@@ -21,7 +21,14 @@
     gameOverInfoText: .asciz "GAME OVER! \nTO START NEW ROUND: \n    -PRESS 'R'"
     scoreText: .asciz "SCORE: %d"
     currentLevelText: .asciz "LEVEL: %d"
-    
+    currentRoundText: .asciz "ROUND: %d"
+    topScoreText: .asciz "TOP SCORES:"
+    firstPlace: .asciz "1. %d"
+    secondPlace: .asciz "2. %d"
+    thirdPlace: .asciz "3. %d"
+    fourthPlace: .asciz "4. %d"
+    fifthPlace: .asciz "5. %d"
+
 
 	.globl	drawInfoScreen
     .type	drawInfoScreen, @function
@@ -62,9 +69,6 @@ setInfoPointsFromNextType:
     exitSetInfoPointsFromNextType:
         ret 
 
-/* 
-@param - rdi - score
-*/
 drawScoreText:
     pushq %rbp
     movq %rsp, %rbp
@@ -117,9 +121,6 @@ drawScoreText:
     popq %rbp
     ret
 
-/* 
-@param - rdi - score
-*/
 drawLevelText:
     pushq %rbp
     movq %rsp, %rbp
@@ -150,6 +151,7 @@ drawLevelText:
     # Y
     movq $9, %rdx
     imulq cellSize, %rdx
+    subq $10, %rdx
 
     # FONTSIZE
     movq $50, %rcx
@@ -170,6 +172,327 @@ drawLevelText:
     movq %rbp, %rsp
     popq %rbp
     ret
+
+drawRoundText:
+    pushq %rbp
+    movq %rsp, %rbp
+    
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+    
+    subq $64, %rsp
+    
+    # TEXT
+    movq $currentRoundText, %rdi    
+    # SCORE FORMAT
+    movq roundsPlayed, %rsi
+    movq $0, %rax
+    call TextFormat
+
+    movq %rax, %rdi
+
+    # X
+    movq $10, %rsi
+    imulq cellSize, %rsi
+    addq halfCellSize, %rsi
+    addq $4, %rsi
+
+    # Y
+    movq $10, %rdx
+    imulq cellSize, %rdx
+    subq $10, %rdx
+
+    # FONTSIZE
+    movq $50, %rcx
+
+    # COLOR
+    movq BACKGROUND, %r8
+
+    call DrawText
+    
+    addq $64, %rsp
+
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+
+    movq %rbp, %rsp
+    popq %rbp
+    ret
+
+
+/* 
+*/
+drawTopScoreText:
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+
+    # TEXT
+    movq $topScoreText, %rdi
+    # X
+    movq $10, %rsi
+    imulq cellSize, %rsi
+    addq halfCellSize, %rsi
+    # Y
+    movq $12, %rdx
+    imulq cellSize, %rdx
+    # FONTSIZE
+    movq $48, %rcx
+    # COLOR
+    movq BACKGROUND, %r8
+    call DrawText
+
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+    ret
+
+/* 
+*/
+drawFirstPlaceText:
+    pushq %rbp
+    movq %rsp, %rbp
+    
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+    subq $64, %rsp
+    
+    # TEXT
+    movq $firstPlace, %rdi    
+    # SCORE FORMAT
+    movq firstScore, %rsi
+    movq $0, %rax
+    call TextFormat
+    movq %rax, %rdi
+
+    # X
+    movq $10, %rsi
+    imulq cellSize, %rsi
+    addq halfCellSize, %rsi
+    addq $4, %rsi
+
+    # Y
+    movq $13, %rdx
+    imulq cellSize, %rdx
+    # FONTSIZE
+    movq $40, %rcx
+    # COLOR
+    movq BACKGROUND, %r8
+    call DrawText
+    
+    addq $64, %rsp
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+
+    movq %rbp, %rsp
+    popq %rbp
+    ret
+
+/* 
+*/
+drawSecondPlaceText:
+    pushq %rbp
+    movq %rsp, %rbp
+    
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+    subq $64, %rsp
+    
+    # TEXT
+    movq $secondPlace, %rdi    
+    # SCORE FORMAT
+    movq secondScore, %rsi
+    movq $0, %rax
+    call TextFormat
+    movq %rax, %rdi
+
+    # X
+    movq $10, %rsi
+    imulq cellSize, %rsi
+    addq halfCellSize, %rsi
+    addq $4, %rsi
+
+    # Y
+    movq $14, %rdx
+    imulq cellSize, %rdx
+    # FONTSIZE
+    movq $40, %rcx
+    # COLOR
+    movq BACKGROUND, %r8
+    call DrawText
+    
+    addq $64, %rsp
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+
+    movq %rbp, %rsp
+    popq %rbp
+    ret
+
+/* 
+*/
+drawThirdPlaceText:
+    pushq %rbp
+    movq %rsp, %rbp
+    
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+    subq $64, %rsp
+    
+    # TEXT
+    movq $thirdPlace, %rdi    
+    # SCORE FORMAT
+    movq thirdScore, %rsi
+    movq $0, %rax
+    call TextFormat
+    movq %rax, %rdi
+
+    # X
+    movq $10, %rsi
+    imulq cellSize, %rsi
+    addq halfCellSize, %rsi
+    addq $4, %rsi
+
+    # Y
+    movq $15, %rdx
+    imulq cellSize, %rdx
+    # FONTSIZE
+    movq $40, %rcx
+    # COLOR
+    movq BACKGROUND, %r8
+    call DrawText
+    
+    addq $64, %rsp
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+
+    movq %rbp, %rsp
+    popq %rbp
+    ret
+
+
+/* 
+*/
+drawFourthPlaceText:
+    pushq %rbp
+    movq %rsp, %rbp
+    
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+    subq $64, %rsp
+    
+    # TEXT
+    movq $fourthPlace, %rdi    
+    # SCORE FORMAT
+    movq fourthScore, %rsi
+    movq $0, %rax
+    call TextFormat
+    movq %rax, %rdi
+
+    # X
+    movq $10, %rsi
+    imulq cellSize, %rsi
+    addq halfCellSize, %rsi
+    addq $4, %rsi
+
+    # Y
+    movq $16, %rdx
+    imulq cellSize, %rdx
+    # FONTSIZE
+    movq $40, %rcx
+    # COLOR
+    movq BACKGROUND, %r8
+    call DrawText
+    
+    addq $64, %rsp
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+
+    movq %rbp, %rsp
+    popq %rbp
+    ret
+
+/* 
+*/
+drawFifthPlaceText:
+    pushq %rbp
+    movq %rsp, %rbp
+    
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+    pushq %rcx
+    pushq %r8
+    subq $64, %rsp
+    
+    # TEXT
+    movq $fifthPlace, %rdi    
+    # SCORE FORMAT
+    movq fifthScore, %rsi
+    movq $0, %rax
+    call TextFormat
+    movq %rax, %rdi
+
+    # X
+    movq $10, %rsi
+    imulq cellSize, %rsi
+    addq halfCellSize, %rsi
+    addq $4, %rsi
+
+    # Y
+    movq $17, %rdx
+    imulq cellSize, %rdx
+    # FONTSIZE
+    movq $40, %rcx
+    # COLOR
+    movq BACKGROUND, %r8
+    call DrawText
+    
+    addq $64, %rsp
+    popq %r8
+    popq %rcx
+    popq %rdx
+    popq %rsi
+    popq %rdi
+
+    movq %rbp, %rsp
+    popq %rbp
+    ret
+
 
 /* 
 */
@@ -577,4 +900,12 @@ drawInfoScreen:
     call drawNextBlockText
     call drawScoreText
     call drawLevelText
+    call drawRoundText
+    call drawTopScoreText
+    call drawFirstPlaceText
+
+    call drawSecondPlaceText
+    call drawThirdPlaceText
+    call drawFourthPlaceText
+    call drawFifthPlaceText
     ret

@@ -15,8 +15,15 @@
     screenHeight: .quad 0               # the pixel height of the raylib window - ySize * cellSize (initialized in main)
 
     currentScore:    .quad 0               # Holds current game score
-    bestScore:       .quad 0               # Holds best score read from file
-    filename:        .string "TopScore.txt" # File containing the top score
+    
+    firstScore: .quad 0
+    secondScore: .quad 0 
+    thirdScore: .quad 0 
+    fourthScore: .quad 0 
+    fifthScore: .quad 0 
+    
+    filename:        .string "config/TopScore.txt" # File containing the top score
+    format: .asciz "%d\n"
     fileModeRead:    .string "r"           # Read mode
     fileModeWrite:   .string "w"           # Write mode
     filePointer:     .quad 0
@@ -52,18 +59,42 @@ readBestScore:
     pushq %rdx
     pushq %rax
     subq $8, %rsp
+    
     # Open file for reading: fopen("TopScore.txt", "r")
     movq $filename, %rdi                   # File name
     movq $fileModeRead, %rsi               # Mode: read ("r")
     call fopen                             # fopen returns file pointer in %rax
     movq %rax, filePointer                 # Save file pointer
 
-    # Read the score: fread(&bestScore, sizeof(long), 1, filePointer)
-    movq $bestScore, %rdi                  # Address of bestScore
-    movq $8, %rsi                          # Size of a long (8 bytes)
-    movq $1, %rdx                          # Number of items to read
-    movq filePointer, %r10                 # File pointer
-    call fread                             # fread(&bestScore, 8, 1, filePointer)
+    # Load 1st best score
+    movq filePointer, %rdi                 # Address of bestScore
+    movq $format, %rsi                     # Size of a long (8 bytes)
+    movq $firstScore, %rdx                 # Number of items to read
+    call fscanf                            # fread(&bestScore, 8, 1, filePointer)
+
+    # Load 2nd best score
+    movq filePointer, %rdi                 # Address of bestScore
+    movq $format, %rsi                     # Size of a long (8 bytes)
+    movq $secondScore, %rdx                # Number of items to read
+    call fscanf                            # fread(&bestScore, 8, 1, filePointer)
+
+    # Load 3rd best score
+    movq filePointer, %rdi                 # Address of bestScore
+    movq $format, %rsi                     # Size of a long (8 bytes)
+    movq $thirdScore, %rdx                 # Number of items to read
+    call fscanf                            # fread(&bestScore, 8, 1, filePointer)
+
+    # Load 4th best score
+    movq filePointer, %rdi                 # Address of bestScore
+    movq $format, %rsi                     # Size of a long (8 bytes)
+    movq $fourthScore, %rdx                # Number of items to read
+    call fscanf                            # fread(&bestScore, 8, 1, filePointer)
+
+    # Load 5th best score
+    movq filePointer, %rdi                 # Address of bestScore
+    movq $format, %rsi                     # Size of a long (8 bytes)
+    movq $fifthScore, %rdx                 # Number of items to read
+    call fscanf                            # fread(&bestScore, 8, 1, filePointer)
 
     # Close the file: fclose(filePointer)
     movq filePointer, %rdi                 # File pointer
@@ -71,21 +102,18 @@ readBestScore:
 
     addq $8, %rsp
     popq %rax
-    popq %r10
     popq %rdx
     popq %rsi
     popq %rdi
     ret
 
 # Function to write the best score to TopScore.txt
-#void
 writeBestScore:
     pushq %rdi
     pushq %rsi
     pushq %rdx
-    pushq %r10
+    pushq %rcx
     pushq %rax
-    subq $8, %rsp
 
     # Open file for writing: fopen("TopScore.txt", "w")
     movq $filename, %rdi                   # File name
@@ -93,20 +121,42 @@ writeBestScore:
     call fopen                             # fopen returns file pointer in %rax
     movq %rax, filePointer                 # Save file pointer
 
-    # Write the score: fwrite(&currentScore, sizeof(long), 1, filePointer)
-    movq $currentScore, %rdi               # Address of currentScore
-    movq $8, %rsi                          # Size of a long (8 bytes)
-    movq $1, %rdx                          # Number of items to write
-    movq filePointer, %r10                 # File pointer
-    call fwrite                            # fwrite(&currentScore, 8, 1, filePointer)
+    # write 1st best score 
+    movq filePointer, %rdi
+    movq $format, %rsi
+    movq firstScore, %rdx
+    call fprintf
+
+    # write 2nd best score 
+    movq filePointer, %rdi
+    movq $format, %rsi
+    movq secondScore, %rdx
+    call fprintf
+
+    # write 3rd best score 
+    movq filePointer, %rdi
+    movq $format, %rsi
+    movq thirdScore, %rdx
+    call fprintf
+
+    # write 4th best score 
+    movq filePointer, %rdi
+    movq $format, %rsi
+    movq fourthScore, %rdx
+    call fprintf
+
+    # write 5th best score 
+    movq filePointer, %rdi
+    movq $format, %rsi
+    movq fifthScore, %rdx
+    call fprintf
 
     # Close the file: fclose(filePointer)
     movq filePointer, %rdi                 # File pointer
     call fclose                            # fclose(filePointer)
 
-    addq $8, %rsp
     popq %rax
-    popq %r10
+    popq %rcx
     popq %rdx
     popq %rsi
     popq %rdi
@@ -114,18 +164,75 @@ writeBestScore:
 
 # Function to check if currentScore is greater than bestScore
 # void
-checkAndUpdateScore:
+checkAndUpdateTopScore:
     pushq %rax
 
     movq currentScore, %rax                # Load currentScore
-    cmpq bestScore, %rax                   # Compare currentScore with bestScore
-    jle .skipUpdate                        # If currentScore <= bestScore, skip update
+    cmpq fifthScore, %rax                  # Compare currentScore with bestScore
+    jle skipUpdate                         # If currentScore <= bestScore, skip update
 
-    # If currentScore > bestScore, update bestScore
-    movq %rax, bestScore                   # Update bestScore
-    call writeBestScore                    # Write new bestScore to file
+    cmpq fourthScore, %rax                 # Compare currentScore with bestScore
+    jle newScoreFifthScore                 # If currentScore <= bestScore, skip update 
 
-.skipUpdate:
+    cmpq thirdScore, %rax                  # Compare currentScore with bestScore
+    jle newScoreFourthScore                # If currentScore <= bestScore, skip update 
+
+    cmpq secondScore, %rax                 # Compare currentScore with bestScore
+    jle newScoreThirdScore                 # If currentScore <= bestScore, skip update 
+
+    cmpq firstScore, %rax                  # Compare currentScore with bestScore
+    jle newScoreSecondScore                # If currentScore <= bestScore, skip update 
+
+    jmp newScoreFirstScore
+
+    # If currentScore > fifth scores  - update ranking table
+    newScoreFirstScore:
+        movq fourthScore, %rdi
+        movq thirdScore, %rsi
+        movq secondScore, %rdx
+        movq firstScore, %rcx
+        movq %rax, firstScore
+        movq %rcx, secondScore
+        movq %rdx, thirdScore
+        movq %rsi, fourthScore
+        movq %rdi, fifthScore
+
+        jmp writeNewScores
+
+    newScoreSecondScore:
+        movq fourthScore, %rdi
+        movq thirdScore, %rsi
+        movq secondScore, %rdx
+        movq %rax, secondScore
+        movq %rdx,thirdScore
+        movq %rsi, fourthScore
+        movq %rdi, fifthScore
+
+        jmp writeNewScores
+
+    newScoreThirdScore:
+        movq fourthScore, %rdi
+        movq thirdScore, %rsi
+        movq %rax, thirdScore
+        movq %rsi, fourthScore
+        movq %rdi, fifthScore
+
+        jmp writeNewScores
+
+    newScoreFourthScore:
+        movq fourthScore, %rdi
+        movq %rax, fourthScore
+        movq %rdi, fifthScore
+        jmp writeNewScores
+
+    newScoreFifthScore:
+        movq %rax, fifthScore
+        jmp writeNewScores
+
+    writeNewScores:
+        call writeBestScore                    # Write new bestScore to file
+
+skipUpdate:
     popq %rax
     ret
     

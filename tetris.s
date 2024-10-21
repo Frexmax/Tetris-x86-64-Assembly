@@ -33,7 +33,7 @@
 main:
     prologue                            # set up stack frame
 
-    # call readBestScore                  # read best score from file
+    call readBestScore                  # read best score from file
     
     # INITALIZE THE RAYLIB WINDOW
     initializeScreenSize                # initialize screen width and height based on cell size and grid size
@@ -156,6 +156,7 @@ checkGameOver:
     jmp exitCheckGameOver
 
     gameOver:
+        call checkAndUpdateTopScore
         movq $0, currentScore
         movq $0, currentLevel
         movq $0, generationCounter

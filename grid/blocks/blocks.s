@@ -14,7 +14,6 @@
     randomNumberBuffer: .space 4, 0     # buffer where getrandom will output the random number    
     randomNumberBufferSize: .quad 4     # size of the buffer, needed for getrandom syscall
 
-
     generationPerLevelIncrease: .quad 5
     generationCounter: .quad 0
     currentLevel: .quad 0

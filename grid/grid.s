@@ -265,7 +265,7 @@ gridShift:
     pushq %rdi                        # save y index
 
     incq currentScore                 # + 1 every row
- 
+        
     loopShift:
         cmpq ySize, %rdi              # if y >= ySize, exit loop
         jge exitGridShift
