@@ -1,9 +1,13 @@
-.include "grid/blocks/blocks.s"
-
 .data
     buffer: .space 200, 0                  # create buffer to store the grid values
                                          
 .text
+    .globl writeToBufferFromCell
+    .type writeToBufferFromCell, @function
+
+    .globl writeToBufferFromXY
+    .type writeToBufferFromXY, @function
+
 	.globl	drawGrid
     .type	drawGrid, @function
 
@@ -25,6 +29,8 @@
     .globl	drawCell
     .type	drawCell, @function
 
+    .globl	clearGrid
+    .type	clearGrid, @function
 
 /* 
 Write to buffer based on the cell number
@@ -33,10 +39,10 @@ Write to buffer based on the cell number
 */
 writeToBufferFromCell:
     pushq %rcx
-
-    movq $buffer, %rcx
-    addq %rdi, %rcx
-    movb %sil, (%rcx)
+                                        
+    movq $buffer, %rcx                  # move the address of buffer to rcx
+    addq %rdi, %rcx                     # add the cell number to the address (to get buffer[cell number])
+    movb %sil, (%rcx)                   # the buffer consists of bytes, so move the last byte of rsi to buffer[cell number]
     
     popq %rcx
     ret
@@ -48,14 +54,16 @@ Write to buffer based on indexX and indexY
 @param - value - rdx - the value to write in the cell
 */
 writeToBufferFromXY:
+    # save used registers
     pushq %rcx
     pushq %rax
-    
-    call xyToCell  # cellno in %rax
-    movq $buffer, %rcx
-    addq %rax, %rcx
-    movb %dl, (%rcx)
+                                        
+    call xyToCell                       # cell number returned in rax (xIndex, yIndex passed already stored in rdi and rsi)
+    movq $buffer, %rcx                  # move the address of the buffer to rcx
+    addq %rax, %rcx                     # add the cell number to the address (to get buffer[cell number])
+    movb %dl, (%rcx)                    # the buffer consists of bytes, so move the last byte of rdx to buffer[cell number]
 
+    # retrieve used registers
     popq %rax
     popq %rcx
     ret
@@ -87,37 +95,26 @@ drawGrid:
         je drawBackground
 
         drawColor:
-            /*
-            # TEST DRAW BLOCK
             movzbq %al, %rdi            # arg 1 - indexX in our coordinate system where the block should be drawn
-            movb %ah, %al
-            movzbq %al, %rsi            # arg 2 - indexY in our coordinate system where the block should be drawn
-            movq BLACK, %rdx            # arg 3 - 32-bits RGBA - color of the block
-            call drawCell   
-            jmp nextLoopIteration               
-            */
-
-
-            movzbq %al, %rdi            # arg 1 - indexX in our coordinate system where the block should be drawn
-            movb %ah, %al
+            movb %ah, %al               # only al can be access in movzbq, so move ah to al
             movzbq %al, %rsi            # arg 2 - indexY in our coordinate system where the block should be drawn
 
-            pushq %rdi
-            movq %r10, %rdi
-            call getColorFromType
-            popq %rdi
+            pushq %rdi                  # save indexX before passing subroutine arguments
+            movq %r10, %rdi             # pass the value in the grid, which represents the type of block and determines the color
+            call getColorFromType       # get the color from type, output color value RGBA in rax   
+            movq %rax, %rdx             # arg 3 - color value 
+            popq %rdi                   # retrieve indexX
 
-            movq %rax, %rdx
-            call drawCell   
-            jmp nextLoopIteration   
+            call drawCell               
+            jmp nextLoopIteration       
 
         drawBackground:
             movzbq %al, %rdi            # arg 1 - indexX in our coordinate system where the block should be drawn
-            movb %ah, %al
+            movb %ah, %al               # only al can be access in movzbq, so move ah to al
             movzbq %al, %rsi            # arg 2 - indexY in our coordinate system where the block should be drawn
           
-            movq BACKGROUND, %rdx
-            call drawCell   
+            movq BACKGROUND, %rdx       # arg 3 - color value 
+            call drawCell               
             jmp nextLoopIteration   
 
         nextLoopIteration:
@@ -263,12 +260,11 @@ Shift the grid downwards above to this line
 */
 gridShift:
     pushq %rdi                        # save y index
+    incq currentScore                 # +1 for every cleared row
 
-    incq currentScore                 # + 1 every row
-        
     loopShift:
         cmpq ySize, %rdi              # if y >= ySize, exit loop
-        jge exitGridShift
+        jge exitGridShift           
 
         call copyLineAbove            # copy line from above into current line
 
@@ -281,7 +277,7 @@ gridShift:
 
 /* 
 */
-checkGrid:                              # CHECK GRID BUGGY !!!!
+checkGrid:                              
     pushq %rdi
     pushq %r10
     
@@ -329,18 +325,19 @@ drawCell:
     pushq %rdx
     pushq %rcx
     pushq %r8
+    pushq %r9
 
     imulq cellSize, %rdi                # scale indexX by cellSize to get pixelX in raylib (arg 1 of raylib DrawRectangle)
 
-    cmpq TRUE, %r14
-    je offsetBorder
+    cmpq TRUE, %r14                     # for info screen it's necessary to shift pixels by border size
+    je offsetBorder                     
     jmp skipBorderShift
 
     offsetBorder:
         addq borderWidth, %rdi
     skipBorderShift:
 
-    cmpq TRUE, %r15
+    cmpq TRUE, %r15                     # again for info screen to allign some blocks, we need to shift by halfCellSize
     je shiftRightHalfCellSize
     jmp skipRightShift
 
@@ -355,7 +352,7 @@ drawCell:
     imulq cellSize, %rcx                # get pixelY (in raylib)
     movq %rcx, %rsi                     # copy pixelY to rsi (arg 2 of raylib DrawRectangle) from rcx
 
-    cmpq TRUE, %r13
+    cmpq TRUE, %r13                     # again for info screen to allign graphics, shift by halfCellSize is needed
     je shiftDownHalfCellSize
     jmp skipDownShift
 
@@ -367,11 +364,10 @@ drawCell:
     movq cellSize, %rdx                 # arg 2 of raylib DrawRectangle - int - width of block
     movq cellSize, %rcx                 # arg 3 of raylib DrawRectangle - int - height of block
     
-    pushq %r9
     call DrawRectangle                  # call raylib function to draw block in the window 
-    popq %r9
     
     # retrieve register used in subroutine
+    popq %r9
     popq %r8
     popq %rcx
     popq %rdx
@@ -380,25 +376,27 @@ drawCell:
     ret
 
 /*
+Loop through the entire grid (200 cells) and write 0 to each cell, thereby clearing it
 */
 clearGrid:
     # save registers used in subroutine
     pushq %rdi
     pushq %r10
 
-    movq $0, %r10                      # initialize loop counter, starting from y = 0
-    loopClearGrid:
-        cmpq cellNumber, %r10
+    movq $0, %r10                       # initialize loop counter, starting from y = 0
+    loopClearGrid:      
+        cmpq cellNumber, %r10           # if loop counter is equal to the number of cells, quit
         jge exitClearGrid
 
-        movq %r10, %rdi
-        movq $0, %rsi
-        call writeToBufferFromCell
+        movq %r10, %rdi                 # pass the loop counter as cell number argument
+        movq $0, %rsi                   # pass 0 as the value to be written
+        call writeToBufferFromCell      # write to grid (buffer)
 
-        incq %r10
-        jmp loopClearGrid
+        incq %r10                       # add 1 to loop counter
+        jmp loopClearGrid               # next iteration
 
 exitClearGrid:
+    # retrieve register used in subroutine
     popq %r10
     popq %rdi
     ret

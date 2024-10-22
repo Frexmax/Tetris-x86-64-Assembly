@@ -1,12 +1,3 @@
-.include "grid/blocks/t_block/t_block.s"
-.include "grid/blocks/o_block/o_block.s"
-.include "grid/blocks/i_block/i_block.s"
-.include "grid/blocks/s_block/s_block.s"
-.include "grid/blocks/z_block/z_block.s"
-.include "grid/blocks/l_block/l_block.s"
-.include "grid/blocks/j_block/j_block.s"
-
-
 .data
     nextBlockType: .quad 1              # type of block that will be spawned
     currentBlockType: .quad 1           # the type of block that is currently falling, e.g. 1  == tBlock
@@ -182,8 +173,8 @@ depending on the type, the subroutine for the specific tetrino will be called
 @return - boolean value TRUE (1) => fall possible, or FALSE (0) => fall impossible, in (rax) for this specific type of tetrino
 */
 checkCanFall:
-    cmpq tBlockType, %rdi                   # check if the current block is a T-block
-    je tBlockCheckCanFall                   # if it is then call the checkCanFall subroutine for the T-block
+    cmpq tBlockType, %rdi                  
+    je tBlockCheckCanFall                  
 
     cmpq iBlockType, %rdi
     je iBlockCheckCanFall
@@ -376,9 +367,9 @@ goLeft:
 
 /* 
 Clear tetrino from the grid
-depending on the type, the subroutine for the specific tetrino will be called
 */
 clearTetrino:
+    # save used registers
     pushq %rdi
     pushq %rsi
 
@@ -402,6 +393,7 @@ clearTetrino:
     movq $0, %rdx
     call writeToBufferFromXY
 
+    # retrieve used registers
     popq %rdi
     popq %rsi
     ret
@@ -409,9 +401,9 @@ clearTetrino:
 
 /* 
 Set tetrino on the grid
-depending on the type, the subroutine for the specific tetrino will be called
 */
 setTetrino:
+    # save used registers
     pushq %rdi
     pushq %rsi
 
@@ -435,6 +427,48 @@ setTetrino:
     movq currentBlockType, %rdx
     call writeToBufferFromXY
 
+    # retrieve used registers
     popq %rdi
     popq %rsi
     ret
+
+/*
+Randomly generate the type of the next tetrino to be spawned
+@return - the type of the next tetrino (rax)
+*/
+generateNextTetrino:
+    # save used registers
+    pushq %rdi
+    pushq %rsi
+    pushq %rdx
+                                            
+    # CHECK IF DIFFICULTY LEVEL SHOULD BE INCREMENTED
+    incq generationCounter                  # add 1 to generationCounter, which determines when to increment level
+    movq generationCounter, %rdi            
+    cmpq generationPerLevelIncrease, %rdi   # check if generationCounter surpassed the needed amount to increment level 
+    jge nextLevel                           # if so then go to next level
+    jmp keepLevel
+
+    nextLevel:
+        incq currentLevel                   # add 1 to level
+        decq framesPerFall                  # subtract 1 from framesPerFall, which will increase the effective fall rate
+        movq $0, generationCounter          # reset generationCounter after level update
+    keepLevel:
+
+    movq nextBlockType, %rdi                
+    movq %rdi, currentBlockType             # set currentBlockType to nextBlockType, before generating new nextBlockType
+
+    # Call GetRandomValue(min, max) with min = 1, max = 7
+    movq $1, %rdi                           # min argument
+    movq blockCount, %rsi                   # max argument (7)
+    call GetRandomValue                     # call the raylib function
+    movq %rax, nextBlockType                # set the new nextBlockType
+
+    movq nextBlockType, %rdi                
+    call setInfoPointsFromNextType          # update infoA1 to infoA4 point coordinates to display in info screen
+
+    # retrieve used registers
+    popq %rdx
+    popq %rsi
+    popq %rdi
+    ret      

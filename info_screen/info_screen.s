@@ -1,19 +1,15 @@
-.include "info_screen/info_screen_config.s"
-
 .data
-    infoA1X: .quad 100
-    infoA1Y: .quad 100
+    infoA1X: .quad 0
+    infoA1Y: .quad 0
 
-    infoA2X: .quad 100
-    infoA2Y: .quad 100
+    infoA2X: .quad 0
+    infoA2Y: .quad 0
 
-    infoA3X: .quad 100
-    infoA3Y: .quad 100
+    infoA3X: .quad 0
+    infoA3Y: .quad 0
 
-    infoA4X: .quad 100
-    infoA4Y: .quad 100
-
-    tempIncrement: .quad 1
+    infoA4X: .quad 0
+    infoA4Y: .quad 0
 
 .text
     nextBlockInfoText: .asciz "NEXT: "
@@ -29,7 +25,6 @@
     fourthPlace: .asciz "4. %d"
     fifthPlace: .asciz "5. %d"
 
-
 	.globl	drawInfoScreen
     .type	drawInfoScreen, @function
 
@@ -39,7 +34,45 @@
     .globl	drawNextBlock
     .type	drawNextBlock, @function
 
+    .globl	drawNextBlockOutline
+    .type	drawNextBlockOutline, @function
+
+    .globl	drawInfoBorder
+    .type	drawInfoBorder, @function
+
+    .globl	drawNextBlockText
+    .type	drawNextBlockText, @function
+
+    .globl	drawScoreText
+    .type	drawScoreText, @function
+
+    .globl	drawLevelText
+    .type	drawLevelText, @function
+
+    .globl	drawRoundText
+    .type	drawRoundText, @function
+
+    .globl	drawTopScoreText
+    .type	drawTopScoreText, @function
+
+    .globl	drawFirstPlaceText
+    .type	drawFirstPlaceText, @function
+
+    .globl	drawSecondPlaceText
+    .type	drawSecondPlaceText, @function
+    
+    .globl	drawThirdPlaceText
+    .type	drawThirdPlaceText, @function
+    
+    .globl	drawFourthPlaceText
+    .type	drawFourthPlaceText, @function
+
+    .globl	drawFifthPlaceText
+    .type	drawFifthPlaceText, @function
+
 /*
+Wrapper function for setInfoPoint, 
+it sets the infoA1 to infoA4 coordinates based on the next type of block
 @param - rdi - type of next block
 */
 setInfoPointsFromNextType:
@@ -69,29 +102,33 @@ setInfoPointsFromNextType:
     exitSetInfoPointsFromNextType:
         ret 
 
+/*
+Display the current user score on the screen as a raylib text
+*/
 drawScoreText:
-    pushq %rbp
-    movq %rsp, %rbp
-    
+    prologue
+
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
     pushq %rcx
     pushq %r8
     
+    # save stack space for TextFormat output
     subq $64, %rsp
-    
-    # TEXT
-    movq $scoreText, %rdi    
+                                            
+    # TEXT      
+    movq $scoreText, %rdi                   # text to display with format value
     # SCORE FORMAT
-    movq currentScore, %rsi
+    movq currentScore, %rsi                 # argument to fill the format
     movq $0, %rax
     call TextFormat
 
-    movq %rax, %rdi
+    movq %rax, %rdi                         # pass the output of TextFormat as argument to DrawText
 
     # X
-    movq $10, %rsi
+    movq $10, %rsi                          
     imulq cellSize, %rsi
     addq halfCellSize, %rsi
     addq $4, %rsi
@@ -109,22 +146,26 @@ drawScoreText:
 
     call DrawText
     
+    # clear stack
     addq $64, %rsp
 
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
     popq %rsi
     popq %rdi
 
-    movq %rbp, %rsp
-    popq %rbp
+    epilogue
     ret
 
+/*
+Display the current level as a raylib text
+*/
 drawLevelText:
-    pushq %rbp
-    movq %rsp, %rbp
+    prologue
     
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -163,20 +204,23 @@ drawLevelText:
     
     addq $64, %rsp
 
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
     popq %rsi
     popq %rdi
 
-    movq %rbp, %rsp
-    popq %rbp
+    epilogue
     ret
 
+/*
+Display the number of rounds played as a raylib user 
+*/
 drawRoundText:
-    pushq %rbp
-    movq %rsp, %rbp
-    
+    prologue
+
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -215,20 +259,22 @@ drawRoundText:
     
     addq $64, %rsp
 
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
     popq %rsi
     popq %rdi
 
-    movq %rbp, %rsp
-    popq %rbp
+    epilogue
     ret
 
 
 /* 
+Display the 'Top Scores' header as a raylib text
 */
 drawTopScoreText:
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -250,6 +296,7 @@ drawTopScoreText:
     movq BACKGROUND, %r8
     call DrawText
 
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
@@ -257,17 +304,19 @@ drawTopScoreText:
     popq %rdi
     ret
 
-/* 
+/*
+Display the top score (read from the file)
 */
 drawFirstPlaceText:
-    pushq %rbp
-    movq %rsp, %rbp
-    
+    prologue
+
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
     pushq %rcx
     pushq %r8
+
     subq $64, %rsp
     
     # TEXT
@@ -294,22 +343,24 @@ drawFirstPlaceText:
     call DrawText
     
     addq $64, %rsp
+
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
     popq %rsi
     popq %rdi
 
-    movq %rbp, %rsp
-    popq %rbp
+    epilogue
     ret
 
 /* 
+Display the 2nd best score (read from the file)
 */
 drawSecondPlaceText:
-    pushq %rbp
-    movq %rsp, %rbp
+    prologue
     
+     # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -341,22 +392,24 @@ drawSecondPlaceText:
     call DrawText
     
     addq $64, %rsp
+
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
     popq %rsi
     popq %rdi
 
-    movq %rbp, %rsp
-    popq %rbp
+    epilogue
     ret
 
-/* 
+/*
+Display the 3rd best score (read from the file)
 */
 drawThirdPlaceText:
-    pushq %rbp
-    movq %rsp, %rbp
+    prologue
     
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -388,23 +441,24 @@ drawThirdPlaceText:
     call DrawText
     
     addq $64, %rsp
+
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
     popq %rsi
     popq %rdi
 
-    movq %rbp, %rsp
-    popq %rbp
+    epilogue
     ret
 
-
 /* 
+Display the 4th best score (read from the file)
 */
 drawFourthPlaceText:
-    pushq %rbp
-    movq %rsp, %rbp
+    prologue
     
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -436,22 +490,24 @@ drawFourthPlaceText:
     call DrawText
     
     addq $64, %rsp
+    
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
     popq %rsi
     popq %rdi
 
-    movq %rbp, %rsp
-    popq %rbp
+    epilogue
     ret
 
 /* 
+Display the 5ht best score (read from the file)
 */
 drawFifthPlaceText:
-    pushq %rbp
-    movq %rsp, %rbp
+    prologue
     
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -483,25 +539,22 @@ drawFifthPlaceText:
     call DrawText
     
     addq $64, %rsp
+  
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
     popq %rsi
     popq %rdi
 
-    movq %rbp, %rsp
-    popq %rbp
-    ret
-
-
-/* 
-*/
-drawRankingText:
+    epilogue
     ret
 
 /*  
+Display the 'NEXT' header above next block display as a raylib text
 */
 drawNextBlockText:
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -528,6 +581,7 @@ drawNextBlockText:
 
     call DrawText
 
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
@@ -536,8 +590,10 @@ drawNextBlockText:
     ret
 
 /* 
+Display basic information in the start screen as a raylib text
 */
 drawStartGameText:
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -550,7 +606,6 @@ drawStartGameText:
     # X
     movq $0, %rsi
     imulq cellSize, %rsi
-    # addq halfCellSize, %rsi
     addq $20, %rsi
 
     # Y
@@ -565,6 +620,7 @@ drawStartGameText:
 
     call DrawText
 
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
@@ -572,9 +628,11 @@ drawStartGameText:
     popq %rdi
     ret
 
-/* 
+/*
+Display basic information in the game over screen as a raylib text
 */
 drawGameOverText:
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -587,7 +645,6 @@ drawGameOverText:
     # X
     movq $0, %rsi
     imulq cellSize, %rsi
-    # addq halfCellSize, %rsi
     addq $20, %rsi
 
     # Y
@@ -602,6 +659,7 @@ drawGameOverText:
 
     call DrawText
 
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
@@ -609,82 +667,25 @@ drawGameOverText:
     popq %rdi
     ret
 
-
-/* 
-*/
-setNextBlockInfoPointsFromSpawn:
-    pushq %rdi
-    pushq %rsi
-    pushq %rdx
-    pushq %rcx
-
-    movq pointXOffset, %rdi
-    movq pointYOffset, %rsi
-
-    # info a1
-    movq a1X, %rdx
-    movq a1Y, %rcx
-    
-    movq %rdx, infoA1X
-    movq %rcx, infoA1Y
-    
-    addq %rdi, infoA1X
-    addq %rsi, infoA1Y
-
-    # info a2
-    movq a2X, %rdx
-    movq a2Y, %rcx
-    
-    movq %rdx, infoA2X
-    movq %rcx, infoA2Y
-    
-    addq %rdi, infoA2X
-    addq %rsi, infoA2Y
-
-
-    # info a3
-    movq a3X, %rdx
-    movq a3Y, %rcx
-    
-    movq %rdx, infoA3X
-    movq %rcx, infoA3Y
-    
-    addq %rdi, infoA3X
-    addq %rsi, infoA3Y
-
-    # info a4
-    movq a4X, %rdx
-    movq a4Y, %rcx
-    
-    movq %rdx, infoA4X
-    movq %rcx, infoA4Y
-    
-    addq %rdi, infoA4X
-    addq %rsi, infoA4Y
-
-    popq %rcx
-    popq %rdx
-    popq %rsi
-    popq %rdi
-    ret
-
 /*
+Draw a border around the next block to spawned
 */
 drawNextBlockOutline:
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
     pushq %rcx
     pushq %r8
 
+    # HORIZONTAL LINES OF NEXT BLOCK OUTLINE
+
     # LINE 1 - horizontal
     # xPos
     movq $11, %rdi
     imulq cellSize, %rdi
     # yPos
-    movq $1, %rsi
-    # TEMP
-    addq tempIncrement, %rsi
+    movq $2, %rsi
     imulq cellSize, %rsi
     # width
     movq $5, %rdx
@@ -702,9 +703,7 @@ drawNextBlockOutline:
     movq $11, %rdi
     imulq cellSize, %rdi    
     # yPos
-    movq $5, %rsi
-    # TEMP
-    addq tempIncrement, %rsi
+    movq $6, %rsi
     imulq cellSize, %rsi
     # width
     movq $5, %rdx
@@ -717,7 +716,7 @@ drawNextBlockOutline:
     # draw
     call DrawRectangle
 
-    # VERTICALS
+    # VERTICAL LINES OF NEXT BLOCK BORDER
 
     # LINE 3 - vertical
     # xPos
@@ -727,9 +726,7 @@ drawNextBlockOutline:
     subq nextBlockOutlineWidth, %rdi
 
     # yPos
-    movq $1, %rsi
-    # TEMP
-    addq tempIncrement, %rsi
+    movq $2, %rsi
     imulq cellSize, %rsi
     # width
     movq nextBlockOutlineWidth, %rdx
@@ -746,9 +743,7 @@ drawNextBlockOutline:
     movq $11, %rdi
     imulq cellSize, %rdi
     # yPos
-    movq $1, %rsi
-    # TEMP
-    addq tempIncrement, %rsi
+    movq $2, %rsi
     imulq cellSize, %rsi
     # width
     movq nextBlockOutlineWidth, %rdx
@@ -760,6 +755,7 @@ drawNextBlockOutline:
     # draw
     call DrawRectangle
 
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
@@ -768,8 +764,10 @@ drawNextBlockOutline:
     ret
 
 /* 
+Draw the next block in the next block section of the info screens based on infoA1 to infoA4
 */
 drawNextBlock:
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -814,9 +812,6 @@ drawNextBlock:
     movq infoA1X, %rdi
     movq infoA1Y, %rsi
 
-    # TEMP
-    subq tempIncrement, %rsi
-
     movq %rax, %rdx
     call drawCell
 
@@ -824,9 +819,6 @@ drawNextBlock:
     call getColorFromType
     movq infoA2X, %rdi
     movq infoA2Y, %rsi
-
-    # TEMP
-    subq tempIncrement, %rsi
 
     movq %rax, %rdx
     call drawCell
@@ -836,9 +828,6 @@ drawNextBlock:
     movq infoA3X, %rdi
     movq infoA3Y, %rsi
 
-    # TEMP
-    subq tempIncrement, %rsi
-
     movq %rax, %rdx
     call drawCell
 
@@ -847,12 +836,10 @@ drawNextBlock:
     movq infoA4X, %rdi
     movq infoA4Y, %rsi
 
-    # TEMP
-    subq tempIncrement, %rsi
-
     movq %rax, %rdx
     call drawCell
 
+    # retrieve registers
     popq %r15
     popq %r14
     popq %r13
@@ -864,6 +851,7 @@ drawNextBlock:
 /* 
 */
 drawInfoBorder:
+    # save registers used in the subroutine
     pushq %rdi
     pushq %rsi
     pushq %rdx
@@ -884,6 +872,7 @@ drawInfoBorder:
 
     call DrawRectangle
 
+    # retrieve registers
     popq %r8
     popq %rcx
     popq %rdx
@@ -894,16 +883,22 @@ drawInfoBorder:
 /* 
 */
 drawInfoScreen:
+    # DISPLAY BORDER BETWEEN PLAYABLE GRID AND INFO SCREEN
+    call drawInfoBorder
+
+    # DISPLAY THE NEXT BLOCK VIEW
+    call drawNextBlockText
     call drawNextBlock
     call drawNextBlockOutline
-    call drawInfoBorder
-    call drawNextBlockText
+    
+    # DISPLAY CURRENT ROUND INFO
     call drawScoreText
     call drawLevelText
     call drawRoundText
+
+    # DISPLAY SCORE TABLE
     call drawTopScoreText
     call drawFirstPlaceText
-
     call drawSecondPlaceText
     call drawThirdPlaceText
     call drawFourthPlaceText

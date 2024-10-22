@@ -1,6 +1,6 @@
-# ADD BORDER TO GRID???
+# LOAD ALL PROJECT FILES
 
-.include "input/input.s"
+.include "input/input_config.s"
 .include "utils/utils.s"
 .include "colors/colors.s"
 .include "config/config.s"
@@ -8,27 +8,29 @@
 .include "audio/audio.s"
 .include "grid/blocks/block_config.s"
 .include "info_screen/info_screen.s"
-.include "info_screen/fonts.s"
+.include "grid/blocks/block_update.s"
+.include "grid/blocks/blocks.s"
+.include "scoring/file_scores.s"
 
-.data   
-    roundsPlayed: .quad 0
-    roundRunning: .quad 0
+.include "grid/blocks/t_block/t_block.s"
+.include "grid/blocks/o_block/o_block.s"
+.include "grid/blocks/i_block/i_block.s"
+.include "grid/blocks/s_block/s_block.s"
+.include "grid/blocks/z_block/z_block.s"
+.include "grid/blocks/l_block/l_block.s"
+.include "grid/blocks/j_block/j_block.s"
+
+                                        
+.data           
+    roundsPlayed: .quad 0               # counter to track how many rounds have been played in this session (i.e. how many game overs)
     
 .text
-    digitOut: .asciz "%ld\n"
-    keyOut: .asciz "Current Key: %d\n"
-    printRegisters: .asciz "RAX: %d, RDI, %d, RSI, %d, RDX: %d\n"
-    out: .asciz "x: %d, y: %d\n"
-    testStringRight: .asciz "WENT RIGHT\n"
-    testStringLeft: .asciz "WENT LEFT\n"
-    testStringUp: .asciz "ROTATE\n"
 
 	.globl	main
 	.type	main, @function
 
-    .type takeAction @function
+	.type	checkGameOver, @function
 
-    .type generateNextTetrino @function
 
 main:
     prologue                            # set up stack frame
@@ -48,9 +50,6 @@ main:
     passMusicStruct                     # pass received music struct as argument
     call PlayMusicStream                # play music
 
-    # FONT SET UP
-    setUpFont                           # load custom font - under development
-
     # WINDOW FPS
 	movq targetFPS, %rdi                # first arg for SetTargetFPS - targetFPS
 	call SetTargetFPS                   # call raylib to set target frame rate
@@ -59,7 +58,7 @@ main:
     setUpFallingInfo                    # calculate values for the fall rate of blocks   
     setUpBlocksForRound                 # prepare current block and next block for the start of the round
 
-    jmp roundWaitLoop                 # loop to wait for user decision
+    jmp roundWaitLoop                   # loop to wait for user decision
 
 roundWaitLoop:
     call WindowShouldClose              # check if the window should be closed: when escape key pressed or window close icon clicked
@@ -77,24 +76,24 @@ roundWaitLoop:
         call drawGrid                   # draw based on the value of the buffer (our grid)
         call drawInfoScreen             # draw information of the info screen
 
-        cmpq $0, roundsPlayed
-        je gameStartDisplay
-        jmp gameOverDisplay
+        cmpq $0, roundsPlayed           # if it's the first round this session
+        je gameStartDisplay             # go to the special gameStart display
+        jmp gameOverDisplay             # else go to gameOver display
 
         gameStartDisplay:
-            call drawStartGameText
+            call drawStartGameText      # draw basic information text (game start version)
             
-            call GetKeyPressed                  # call raylib to get currently pressed key
-            cmpq KEY_S, %rax                    # if the user presses S start a new round
-            je mainGameLoop                     # go to main game loop
+            call GetKeyPressed          # call raylib to get currently pressed key
+            cmpq KEY_S, %rax            # if the user presses S start a new round
+            je mainGameLoop             # go to main game loop
             jmp continueFromDisplays
 
         gameOverDisplay:
-            call drawGameOverText
+            call drawGameOverText       # draw basic information text (game over version)
             
-            call GetKeyPressed                  # call raylib to get currently pressed key
-            cmpq KEY_R, %rax                    # also if the user presses R, then start new round (after game over)
-            je mainGameLoop                     # go to main game loop
+            call GetKeyPressed          # call raylib to get currently pressed key
+            cmpq KEY_R, %rax            # also if the user presses R, then start new round (after game over)
+            je mainGameLoop             # go to main game loop
             jmp continueFromDisplays
 
         continueFromDisplays:
@@ -132,235 +131,42 @@ quitGame:
     call CloseWindow                    # close window
     call CloseAudioDevice
 
-    # call checkAndUpdateScore          # write the best score to file
-
     epilogue	                        # close stack frame
     movq $0, %rdi                       # error code 0, all successful
     call exit                           
 
 /* 
+Checks if the game is finished, else generate and spawn new block
 @param - rdi - type of block
 @returns - TRUE (1) is game over, FALSE (0) game continues
 */
 checkGameOver:
     pushq %rdi
     pushq %rdi
+                                        
+    call generateNextTetrino            # generate next tetrino type 
+    movq currentBlockType, %rdi         # pass the current tetrino type to spawnBlock
+    call spawnBlock                     # check if spawn possible and set a1 to a4 coordinates
+
+    cmpq FALSE, %rax                    # if spawn not possible 
+    je gameOver                         # it is game over
     
-    call generateNextTetrino
-    movq currentBlockType, %rdi
-    call spawnBlock
-    
-    cmpq FALSE, %rax
-    je gameOver
-    movq FALSE, %rax
-    jmp exitCheckGameOver
+    movq FALSE, %rax                    # else game continues
+    jmp exitCheckGameOver               # and exit subroutine
 
     gameOver:
-        call checkAndUpdateTopScore
-        movq $0, currentScore
-        movq $0, currentLevel
-        movq $0, generationCounter
-        incq roundsPlayed
-        call clearGrid
-        setUpFallingInfo
-        resetFallingInfo
-        setUpBlocksForRound
-        movq TRUE, %rax
+        call checkAndUpdateTopScore     # update score, if sufficient value
+        resetScoreAndDifficulty         
+
+        incq roundsPlayed               # add this round to rounds played
+        call clearGrid                  # set grid to all 0 (start grid)
+        setUpFallingInfo                # recalculate falling rate info
+        resetFallingInfo                # reset counters for falling
+        setUpBlocksForRound             # generate blocks for new round
+
+        movq TRUE, %rax                 # set game over (return value) to true 
 
     exitCheckGameOver:
         popq %rdi
         popq %rdi
-        ret
-
-/*
-Randomly generate the type of the next tetrino to be spawned
-@return - the type of the next tetrino (rax)
-*/
-generateNextTetrino:
-    pushq %rdi
-    pushq %rsi
-    pushq %rdx
-
-    # CHECK IF DIFFICULTY LEVEL SHOULD BE INCREMENTED
-    incq generationCounter
-    movq generationCounter, %rdi
-    cmpq generationPerLevelIncrease, %rdi
-    jge nextLevel
-    jmp keepLevel
-
-    nextLevel:
-        incq currentLevel
-        decq framesPerFall
-        movq $0, generationCounter
-    keepLevel:
-
-    movq nextBlockType, %rdi
-    movq %rdi, currentBlockType
-
-    # Call GetRandomValue(min, max) with min = 1, max = 7
-    movq $1, %rdi                # min argument
-    movq blockCount, %rsi        # max argument (7)
-    call GetRandomValue          # call the raylib function
-
-    movq %rax, nextBlockType
-    # movq %rax, currentBlockType  # store the result as the current block type
-
-    movq nextBlockType, %rdi
-    call setInfoPointsFromNextType
-
-    popq %rdx
-    popq %rsi
-    popq %rdi
-    ret                         
-/*
-TO DO
-@return - TRUE (1) is game over, FALSE (0) game continues
-*/
-tryFall:
-    # save registers used
-    pushq %rdi
-    pushq %rsi
-
-    incq fallingCounter
-    movq framesPerFall, %rdi
-    movq fallingCounter, %rsi
-    imulq fallRateMultiplier, %rsi
-
-    cmpq %rdi, %rsi
-    jge attemptFall 
-
-    movq FALSE, %rax
-    jmp exitTryFall
-
-    attemptFall:
-        # subq %rdi, fallingCounter        
-        movq $0, fallingCounter
-
-        movq currentBlockType, %rdi     # arg 1 of checkCanGoLeft - the type of the current block 
-        call checkCanFall               # returns if moving left is possible
-        
-        cmpq TRUE, %rax                 # if moving left is possible:
-        je executeFall
-        jmp fallNotPossible
-        
-        executeFall:
-            movq currentBlockType, %rdi
-            call clearTetrino
-
-            movq currentBlockType, %rdi
-            call fall                       # then move the tetrino left
-
-            movq currentBlockType, %rdi
-            call setTetrino
-
-            movq FALSE, %rax
-            jmp exitTryFall
-
-        fallNotPossible:
-            call checkGrid                  # BUGGY
-            call checkGameOver
-
-        jmp exitTryFall
-
-    exitTryFall:
-        popq %rsi
-        popq %rdi
-        ret
-
-/* 
-Checks user keyboard input, if the user pressed:
-    - RIGHT ARROW : check if it's possible to move the tetrino right, if yes, do it, else no changes
-    - LEFT ARROW : check if it's possible to move the tetrino left, if yes, do it, else no changes
-    - UP ARROW : check if it's possible to rotate the tetrino, if yes, do it, else no changes
-    - ELSE : don't make any changes
-*/
-takeAction:
-    # save register used in the subroutine
-    pushq %rdi
-    pushq %rsi
-    pushq %rdx
-    pushq %r8
-    pushq %r9
-
-    #movq $windowTitle, %rdi            # pass text to DrawText
-    #movq 0, %rsi                        # X position
-    #movq 0, %rdx                        # Y position
-    #movq $16, %r8                  # font size
-    #movq $0xFFFFFFFF, %r9               # text color (white)
-    #call DrawText                       # draw the text on the screen
-    
-    call GetKeyPressed                  # get currently pressed key in rax, 0 if no key pressed
-
-    cmpq KEY_DOWN, %rax                 # if the current key pressed is the DOWN ARROW key:
-    je accelerateFallCommand            # increase the fallRateMultiplier
-
-    cmpq KEY_RIGHT, %rax                # if the current key pressed is the RIGHT ARROW key:
-    je moveRightCommand                 # try to move the tetrino to the right
-
-    cmpq KEY_LEFT, %rax                 # if the current key pressed is the LEFT ARROW key:
-    je moveLeftCommand                  # try to move the tetrino to the left
-
-    cmpq KEY_UP, %rax                   # if the current key pressed is the UP ARROW key:
-    je rotateCommand                    # try to rotate the tetrino
-
-    jmp exitTakeAction                  # if none of the above, then either no key was pressed or an invalid one, exit subroutine
-
-    moveRightCommand:
-        movq $1, fallRateMultiplier    # if the user pressed another key, reset fallRateMultiplier to default
-        
-        movq currentBlockType, %rdi     # arg 1 of checkCanGoRight - the type of the current block 
-        call checkCanGoRight            # returns if moving right is possible
-
-        cmpq TRUE, %rax                 # if moving right is possible:
-        jne exitTakeAction
-
-        call clearTetrino
-        call goRight                       # then move the tetrino left
-        call setTetrino
-
-        jmp exitTakeAction              # action performed, exit subroutine
-
-    moveLeftCommand:
-        movq $1, fallRateMultiplier    # if the user pressed another key, reset fallRateMultiplier to default
-
-        movq currentBlockType, %rdi     # arg 1 of checkCanGoLeft - the type of the current block 
-        call checkCanGoLeft             # returns if moving left is possible
-        
-        cmpq TRUE, %rax                 # if moving left is possible:
-        jne exitTakeAction                     # then move the tetrino left
-
-        call clearTetrino
-        call goLeft                       # then move the tetrino left
-        call setTetrino
-
-        jmp exitTakeAction              # action performed, exit subroutine
-
-    rotateCommand:
-        movq $1, fallRateMultiplier    # if the user pressed another key, reset fallRateMultiplier to default
-
-        movq currentBlockType, %rdi     # arg 1 of checkCanRotate - the type of the current block  
-        call checkCanRotate             # returns if rotating the tetrino is possible
-
-        cmpq TRUE, %rax                 # if rotating the tetrino is possible:
-        jne exitTakeAction                     # then rotate the tetrino
-
-        call clearTetrino
-        movq currentBlockType, %rdi
-        call rotate                       # then move the tetrino left
-        call setTetrino
-
-        jmp exitTakeAction              # action performed, exit subroutine
-
-    accelerateFallCommand:
-        # movq $4, fallRateMultiplier
-        addq $2, fallRateMultiplier
-        jmp exitTakeAction
-
-    exitTakeAction:
-        # retrieve register used in the subroutine
-        popq %r9
-        popq %r8
-        popq %rdx
-        popq %rsi
-        popq %rdi             
         ret

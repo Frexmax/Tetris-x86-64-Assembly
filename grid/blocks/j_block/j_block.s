@@ -48,19 +48,19 @@ jBlockSpawnBlock:
 jBlockSetInfoPoint:
     # point a1
     movq $12, infoA1X                        
-    movq $17, infoA1Y                        
+    movq $16, infoA1Y                        
 
     # point a2                            
     movq $13, infoA2X
-    movq $17, infoA2Y
+    movq $16, infoA2Y
 
     # point a3
     movq $14, infoA3X
-    movq $17, infoA3Y
+    movq $16, infoA3Y
 
     # point 4
     movq $12, infoA4X
-    movq $16, infoA4Y
+    movq $15, infoA4Y
     ret
 
 /* 

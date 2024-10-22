@@ -14,50 +14,16 @@
 .data   
     BLACK: .quad 0xff000000 
     WHITE: .quad 0xffffffff
-    
-    IBLOCKCOLOR: .quad 0xffffff00
-    JBLOCKCOLOR: .quad 0xffff0000
-    LBLOCKCOLOR: .quad 0xff007fff
-    OBLOCKCOLOR: .quad 0xff00ffff
-    TBLOCKCOLOR: .quad 0xff800080
-    SBLOCKCOLOR: .quad 0xff00ff00
-    ZBLOCKCOLOR: .quad 0xff0000ff
 
-    // BACKGROUND: .quad 0xffffffff
-    // BACKGROUND: .quad 0xff505050
-    // BACKGROUND: .quad 0xff2e2e2e
-    //BACKGROUND: .quad 0xffa6413d
-    BACKGROUND: .quad 0xffab5e5b
-    
-    # INFOSCREENBACKGROUND: .quad 0xff7d421e
-    # INFOSCREENBACKGROUND: .quad 0xff4f071a
-    # INFOSCREENBACKGROUND: .quad 0xff3b2927
-    # INFOSCREENBACKGROUND: .quad 0xff331d1b
-    INFOSCREENBACKGROUND: .quad 0xff4a2723
+    IBLOCKCOLOR: .quad 0xffffff00       # light blue
+    JBLOCKCOLOR: .quad 0xffff0000       # blue
+    LBLOCKCOLOR: .quad 0xff007fff       # orange
+    OBLOCKCOLOR: .quad 0xff00ffff       # yellow
+    TBLOCKCOLOR: .quad 0xff800080       # purple
+    SBLOCKCOLOR: .quad 0xff00ff00       # green
+    ZBLOCKCOLOR: .quad 0xff0000ff       # red
 
-    # BORDERCOLOUR: .quad 0xff6e3816
-    BORDERCOLOUR: .quad 0xff5c2c0e
-
-    # NEXTBLOCKOUTLINECOLOR: .quad 0xff361c2e
-    NEXTBLOCKOUTLINECOLOR: .quad 0xff300e0a
-
-.macro setColorText # color to be decided
-    subq $16, %rsp
-    movb $0xff, -1(%rbp) # last arg
-    movb $0x00, -2(%rbp)
-    movb $0x00, -3(%rbp)   
-    movb $0x00, -4(%rbp) # first arg
-.endm
-
-.macro setColorRAYWHITE
-    subq $16, %rsp
-    movb $0xff, -1(%rbp) # last arg
-    movb $0xff, -2(%rbp)
-    movb $0xff, -3(%rbp)
-    movb $0xff, -4(%rbp) # first arg
-
-.endm
-
-.macro clearStackFromColor
-    addq $16, %rsp
-.endm
+    BACKGROUND: .quad 0xffab5e5b        # very light blue
+    INFOSCREENBACKGROUND: .quad 0xff4a2723 # darker blue
+    BORDERCOLOUR: .quad 0xff5c2c0e      # darkish blue
+    NEXTBLOCKOUTLINECOLOR: .quad 0xff300e0a # dark blue
