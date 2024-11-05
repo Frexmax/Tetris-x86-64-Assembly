@@ -11,3 +11,8 @@ Then you can run the game itself by:
 - make reset_score: sets all top 5 scores to 0
 
 ![TetrisGitHubDocs2](https://github.com/user-attachments/assets/3306e353-c06e-499f-98a6-e1adbfb6eb65)
+
+## Controls ?
+- Up arrow for right rotate
+- Right / Left arrow for right and left shift respectively
+- Down arrow to increase the fall rate of the block, increase per press, holding the key has no effect
