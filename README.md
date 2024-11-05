@@ -1,5 +1,5 @@
 # Tetris-x86-64-Assembly
-Tetris implemented in x86-64 assembly using the raylib library for the CSE1400 Computer Organisation course at TU Delft
+Tetris implemented in x86-64 assembly using the raylib library for the CSE1400 Computer Organisation course at TU Delft.
 
 ## How to run ?
 Firstly make sure you have the raylib library correctly installed!
@@ -20,4 +20,4 @@ Then you can run the game itself by:
 ## Gameplay ?
 The overall gameplay has been kept true to the original with some minor changes in when the level is updated!
 In our version the level is updated per 5 blocks, which, like in the original, slightly increases the default 
-speed of the blocks
+speed of the blocks.
