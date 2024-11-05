@@ -16,3 +16,8 @@ Then you can run the game itself by:
 - Up arrow for right rotate
 - Right / Left arrow for right and left shift respectively
 - Down arrow to increase the fall rate of the block, increase per press, holding the key has no effect
+
+## Gameplay ?
+The overall gameplay has been kept true to the original with some minor changes in when the level is updated!
+In our version the level is updated per 5 blocks, which, like in the original, slightly increases the default 
+speed of the blocks
