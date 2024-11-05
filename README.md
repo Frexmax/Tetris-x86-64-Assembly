@@ -18,6 +18,6 @@ Then you can run the game itself by:
 - Down arrow to increase the fall rate of the block, increase per press, holding the key has no effect
 
 ## Gameplay ?
-The overall gameplay has been kept true to the original with some minor changes in when the level is updated!
+The overall gameplay has been kept true to the original with some minor changes in the way the level is updated!
 In our version the level is updated per 5 blocks, which, like in the original, slightly increases the default 
 speed of the blocks.
