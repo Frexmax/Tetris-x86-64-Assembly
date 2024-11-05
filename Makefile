@@ -6,3 +6,8 @@ play:
 
 clean:
 	rm -f tetris
+
+reset_score:
+	gcc -no-pie -g -o clean_scores scoring/clean_scores.s
+	./clean_scores
+	rm -f clean_scores
