@@ -1,1 +1,1 @@
-
+# Documenting the game grid
