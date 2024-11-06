@@ -30,5 +30,5 @@ The overall gameplay has been kept true to the original with some minor changes 
 In our version the level is updated per 5 blocks, which, like in the original, slightly increases the default 
 speed of the blocks.
 
-# Acknoledgments 
-This project was the result of great collaboration with batm0use 
+## Acknoledgments 
+This project was the result of great collaboration with [@batm0use](https://github.com/batm0use) 
