@@ -6,11 +6,11 @@
     fourthScore: .quad 0 
     fifthScore: .quad 0 
                                                                                 
-    filename: .asciz "scoring/TopScore.txt" # File containing the top score
-    format: .asciz "%d\n"               # format used to read from the file
-    fileModeRead: .asciz "r"            # Read mode
-    fileModeWrite: .asciz "w"           # Write mode
-    filePointer: .quad 0                # pointer to the file
+    filename: .asciz "scoring/top_scores.txt"   # File containing the top score
+    format: .asciz "%d\n"                       # format used to read from the file
+    fileModeRead: .asciz "r"                    # Read mode
+    fileModeWrite: .asciz "w"                   # Write mode
+    filePointer: .quad 0                        # pointer to the file
 
 
 .text
