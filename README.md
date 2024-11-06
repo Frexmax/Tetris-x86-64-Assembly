@@ -6,7 +6,7 @@ Firstly make sure you have the raylib library correctly installed!
 Then you can run the game itself by:
 
 | Command          | Description                                                       |
-| ---------------- |:-----------------------------------------------------------------:| 
+| ---------------- | ----------------------------------------------------------------- | 
 | make tetris      | assembles the game to a binary file (prepares the file to be run) | 
 | make play        | runs the game                                                     | 
 | make clean       | removes the binary file                                           | 
@@ -17,7 +17,7 @@ Then you can run the game itself by:
 ## Controls ?
 
 | Key                | Effect                                                                             |
-| ------------------ |:----------------------------------------------------------------------------------:| 
+| ------------------ | ---------------------------------------------------------------------------------- | 
 | UP arrow           | rotate block                                                                       | 
 | RIGHT arrow        | shift block to the right                                                           | 
 | LEFT arrow         | shift block to the left                                                            | 
