@@ -5,8 +5,10 @@ Tetris implemented in x86-64 assembly using the raylib library for the CSE1400 C
 
 ## Installation Instructions
 ### Installing raylib
-```
-```
+As this process has already been well explained by the team behind Raylib, please follow the instruction in the links below:
+[WINDOWS](https://github.com/raysan5/raylib/wiki/Working-on-Windows)
+[LINUX](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux)
+[MACOS](https://github.com/raysan5/raylib/wiki/Working-on-macOS)
 
 ### Cloning the repository:
 Type this command in the directory, where you want to store the game
