@@ -1,9 +1,18 @@
 # Tetris-x86-64-Assembly
 Tetris implemented in x86-64 assembly using the raylib library for the CSE1400 Computer Organisation course at TU Delft.
 
-## Requirements 
-
 ## Installation Instructions
+### Installing raylib
+As this process has already been well explained by the team behind raylib, please follow the instruction in the links below:
+- [Windows](https://github.com/raysan5/raylib/wiki/Working-on-Windows)
+- [GNU Linux](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux)
+- [MacOS](https://github.com/raysan5/raylib/wiki/Working-on-macOS)
+
+### Cloning the repository:
+Type this command in the directory, where you want to store the game.
+```
+git clone https://github.com/Frexmax/Tetris-x86-64-Assembly.git
+```
 
 ## How to run 
 Firstly make sure you have the raylib library correctly installed!
