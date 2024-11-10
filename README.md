@@ -2,11 +2,14 @@
 Tetris implemented in x86-64 assembly using the raylib library for the CSE1400 Computer Organisation course at TU Delft.
 
 ## Installation Instructions
+For now the game is only available for Linux. Windows users can use WSL to work around this problem. For mac, a VM will be necessary.
+
+### Installing WSL for Windows users
+[Microsoft tutorial for WSL installations](https://learn.microsoft.com/en-us/windows/wsl/install)
+
 ### Installing raylib
 As this process has already been well explained by the team behind raylib, please follow the instruction in the links below:
-- [Windows](https://github.com/raysan5/raylib/wiki/Working-on-Windows)
 - [GNU Linux](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux)
-- [MacOS](https://github.com/raysan5/raylib/wiki/Working-on-macOS)
 
 ### Cloning the repository:
 Type this command in the directory, where you want to store the game.
